@@ -363,6 +363,17 @@ textarea.input{resize:none}
 .atalho.para-loc > .ic{color:var(--azul)}
 .atalho-x{color:var(--tx-3);padding:5px;border-radius:8px;margin-left:auto}
 .atalho-x:hover{background:#EEF4F9;color:var(--tx-1)}
+/* senha Geral: nome de quem está fazendo */
+.operador[hidden]{display:none}
+.operador .rot em{color:var(--ambar);font-weight:700}
+.operador .input{border-color:#E9C98B;background:#FFFCF4}
+.operador .input:focus{background:#fff}
+/* loja para funcionários: só as vendas do dia */
+.hoje-loja{margin:0 0 14px}
+.hoje-loja[hidden],#barra-loja[hidden],#resumo-loja[hidden]{display:none}
+.hoje-loja h3{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:16px;font-weight:700;color:var(--tx-1)}
+.hoje-loja h3 .ic{color:var(--roxo)}
+.hoje-loja p{font-size:12.5px;line-height:1.45;color:var(--tx-2);margin-top:4px}
 .faixa{display:none;align-items:center;justify-content:center;gap:9px;font-size:12.5px;font-weight:700;line-height:1.35;padding:9px 16px;text-align:center}
 .faixa.on{display:flex}
 .faixa-rede{background:#FDECEC;color:#9F1D17;border-bottom:1px solid #F5C9C9}
@@ -499,6 +510,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
             <textarea id="f-obs" rows="2" class="input" placeholder="Detalhes da locação"></textarea>
           </div>
 
+          <div class="campo operador" id="op-loc" hidden>
+            <label class="rot" for="op-loc-in">Seu nome <em>(obrigatório na senha Geral)</em></label>
+            <input id="op-loc-in" class="input op-in" list="lista-operadores" autocomplete="off" autocapitalize="words" maxlength="40" placeholder="Quem está registrando esta locação?">
+          </div>
+
           <p id="f-erro" class="erro"></p>
           <div id="atalho-loc" class="atalho para-loc" aria-live="polite"></div>
           <p id="assina-loc" class="assina" aria-live="polite"></p>
@@ -579,6 +595,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
               <textarea id="vd-obs" rows="2" class="input" placeholder="Detalhes da venda"></textarea>
             </div>
 
+            <div class="campo operador" id="op-loja" hidden>
+              <label class="rot" for="op-loja-in">Seu nome <em>(obrigatório na senha Geral)</em></label>
+              <input id="op-loja-in" class="input op-in" list="lista-operadores" autocomplete="off" autocapitalize="words" maxlength="40" placeholder="Quem está registrando esta venda?">
+            </div>
+
             <p id="vd-erro" class="erro"></p>
             <div id="atalho-loja" class="atalho" aria-live="polite"></div>
             <p id="assina-loja" class="assina" aria-live="polite"></p>
@@ -587,7 +608,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         </section>
 
         <section>
-          <div class="barra">
+          <div id="hoje-loja" class="hoje-loja" hidden>
+            <h3><span data-ic="sacola" data-tam="17"></span>Vendas de hoje</h3>
+            <p>Confira se a venda ficou certa. Registrou algo errado? Avise o Cristiano para corrigir.</p>
+          </div>
+          <div class="barra" id="barra-loja">
             <div class="busca">
               <span class="ic" data-ic="lupa"></span>
               <input id="busca-loja" class="input" placeholder="Buscar por item ou pessoa">
@@ -713,6 +738,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     </div>
   </div>
 
+  <datalist id="lista-operadores"></datalist>
   <div id="toast" class="toast"><span class="ic" data-ic="check"></span><span id="toast-tx"></span></div>
 
 <script>
@@ -756,7 +782,9 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   var state = { movs: [], pessoas: [], equipamentos: [], resumo: null, usuario: '', filtro: 'abertas', busca: '', devAberta: null, devMarcas: null, carregando: true, erroCarga: null, assinatura: '', reqLocacao: '', reqDev: null,
     // loja
     aba: 'locacao', loja: null, lojaAtiva: false, podeMudarPreco: false, filtroLoja: 'apagar', buscaLoja: '', pagAberto: null, pagMarcas: null,
-    reqVenda: '', reqPag: null, vendaPag: '', valorManual: false, totalVenda: 0, atalho: null };
+    reqVenda: '', reqPag: null, vendaPag: '', valorManual: false, totalVenda: 0, atalho: null,
+    // quem vê a loja completa (o dono) e se a senha é compartilhada (Geral: pede o nome de quem está fazendo)
+    lojaCompleta: false, pedeNome: false };
   var picker = { tipo: null, letra: null, alvoItem: null, destino: 'loc', item: null };
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -830,6 +858,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         equipamentos: equipamentos,
         usuario: USUARIO_TREINO,
         podeMudarPreco: true,
+        lojaCompleta: true,
+        pedeNome: false,
         loja: { vendas: vendas, pagamentos: pagamentos, itens: lojaItens.map(function(x){ return { nome:x.nome, precoCentavos:x.preco }; }), resumo: resumoLojaDemo() }
       }));
     }
@@ -972,16 +1002,61 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     state.lojaAtiva = !!(resp.loja && typeof resp.loja==='object');
     state.loja = state.lojaAtiva ? resp.loja : null;
     state.podeMudarPreco = !!resp.podeMudarPreco;
+    state.lojaCompleta = !!resp.lojaCompleta;
+    state.pedeNome = !!resp.pedeNome;
     state.assinatura = assinaturaDados(resp);
     atualizarUsuario();
   }
 
   // ================= QUEM ESTÁ USANDO =================
   // O nome vem do servidor (descoberto pela senha). A tela só mostra: não escolhe nem envia o nome.
-  function conteudoAssinatura(){
+  function conteudoAssinatura(nomeOp){
     if(!state.usuario) return '';
-    return icon('user',14)+'<span>Vai ficar no nome de <strong>'+esc(state.usuario)+'</strong></span>'
-      + (MODO_TREINO ? '' : '<button type="button" class="assina-trocar" data-acao="trocar">Não é você? Trocar</button>');
+    var quem = state.pedeNome ? (state.usuario+' ('+(nomeOp || 'seu nome')+')') : state.usuario;
+    return icon('user',14)+'<span>Vai ficar no nome de <strong>'+esc(quem)+'</strong></span>'
+      + (MODO_TREINO ? '' : '<button type="button" class="assina-trocar" data-acao="trocar">'+(state.pedeNome ? 'Tem senha própria? Trocar' : 'Não é você? Trocar')+'</button>');
+  }
+  // senha Geral: o nome de quem está fazendo (mesmas regras do servidor) — "joão da silva" → "João da Silva"
+  function normOperador(v){
+    var min = ['de','da','do','das','dos','e'];
+    return String(v==null?'':v).replace(/[,()\[\]{}<>"=+@;|\\\/*#]/g,' ').replace(/\s+/g,' ').trim().slice(0,40).trim()
+      .toLowerCase().split(' ').filter(function(p){ return p; })
+      .map(function(p,i){ return (i>0 && min.indexOf(p)>=0) ? p : p.charAt(0).toUpperCase()+p.slice(1); }).join(' ');
+  }
+  function operadorValido(n){ return String(n||'').replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g,'').length >= 2; }
+  // pega o nome do campo; se faltar, mostra o erro e devolve null. Sem senha Geral, devolve ''.
+  function lerOperador(idCampo, falhar){
+    if(!state.pedeNome) return '';
+    var el = document.getElementById(idCampo);
+    var nome = normOperador(el ? el.value : '');
+    if(!operadorValido(nome)){
+      falhar('Escreva o seu nome no campo "Seu nome" — com a senha Geral ele é obrigatório.');
+      try { if(el) el.focus(); } catch(e){}
+      return null;
+    }
+    return nome;
+  }
+  function quemFicou(resp, operador){ var u = (resp && resp.usuario) || ''; return u ? (operador ? u+' ('+operador+')' : u) : ''; }
+  function guardarOperador(nome){
+    if(!nome) return;
+    try {
+      var lista = JSON.parse(localStorage.getItem('sof_operadores') || '[]').filter(function(x){ return x!==nome; });
+      lista.unshift(nome);
+      localStorage.setItem('sof_operadores', JSON.stringify(lista.slice(0,30)));
+    } catch(e){}
+    atualizarListaOperadores();
+  }
+  // sugestões para o campo "Seu nome": nomes já usados na senha Geral (nos registros e neste aparelho)
+  function atualizarListaOperadores(){
+    var nomes = {}, re = /^Geral \(([^()]+)\)$/;
+    function pega(t){ String(t||'').split(/\s*,\s*/).forEach(function(x){ var m = re.exec(x.trim()); if(m) nomes[m[1]] = 1; }); }
+    (state.movs||[]).forEach(function(m){ pega(m.registradoPor); pega(m.recebidoPor); });
+    var L = state.loja || {};
+    (L.vendas||[]).forEach(function(v){ pega(v.registradoPor); });
+    (L.pagamentos||[]).forEach(function(p){ pega(p.recebidoPor); });
+    try { JSON.parse(localStorage.getItem('sof_operadores') || '[]').forEach(function(n){ if(n) nomes[n] = 1; }); } catch(e){}
+    document.getElementById('lista-operadores').innerHTML = Object.keys(nomes).sort(function(a,b){ return a.localeCompare(b,'pt-BR'); })
+      .map(function(n){ return '<option value="'+esc(n)+'"></option>'; }).join('');
   }
   function atualizarUsuario(){
     var nome = state.usuario || '';
@@ -992,14 +1067,16 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     bt.classList.toggle('com-nome', !!nome);
     bt.setAttribute('aria-label', nome ? ('Usando como '+nome+'. Toque para sair') : 'Sair');
     bt.title = nome ? ('Usando como '+nome+' — toque para sair') : 'Sair';
-    ['assina-loc','assina-loja'].forEach(function(id){
-      var a = document.getElementById(id);
-      a.innerHTML = conteudoAssinatura();
+    [['assina-loc','op-loc'],['assina-loja','op-loja']].forEach(function(par){
+      var a = document.getElementById(par[0]);
+      a.innerHTML = conteudoAssinatura(normOperador(document.getElementById(par[1]+'-in').value));
       a.classList.toggle('on', !!nome);
+      document.getElementById(par[1]).hidden = !state.pedeNome;
     });
+    if(state.pedeNome) atualizarListaOperadores();
   }
   function assinaturaDados(resp){
-    try { return JSON.stringify([resp.movs, resp.pessoas, resp.equipamentos, resp.resumo, resp.loja, resp.podeMudarPreco]); } catch(e){ return String(Date.now()); }
+    try { return JSON.stringify([resp.movs, resp.pessoas, resp.equipamentos, resp.resumo, resp.loja, resp.podeMudarPreco, resp.lojaCompleta, resp.pedeNome]); } catch(e){ return String(Date.now()); }
   }
 
   function servidor(nomeFn, arg){
@@ -1475,6 +1552,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
           + '<div><label class="rot" for="dev-data">Data da devolução</label><input id="dev-data" type="date" class="input" value="'+hoje()+'"></div>'
           + '<div><label class="rot" for="dev-obs">Observações <em>(opcional)</em></label><input id="dev-obs" class="input" placeholder="Voltou danificado? Por que faltou?"></div>'
           + '</div>'
+          + (state.pedeNome ? '<div class="operador" style="margin-top:10px"><label class="rot" for="op-dev-in">Seu nome <em>(obrigatório na senha Geral)</em></label><input id="op-dev-in" class="input op-in" list="lista-operadores" autocomplete="off" autocapitalize="words" maxlength="40" placeholder="Quem está recebendo?"></div>' : '')
           + '<p id="dev-erro" class="erro" style="margin:10px 0 0"></p>'
           + (state.usuario ? '<p class="assina on" style="margin:12px 0 0">'+conteudoAssinatura()+'</p>' : '')
           + '<div class="acoes"><button type="button" class="bt bt-verde" data-acao="confirmar-dev" data-seq="'+g.seq+'">'+icon('check',14)+'Confirmar devolução</button>'
@@ -1544,6 +1622,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 
     if(!quem) return mostrarErroForm('Escolha quem está levando os equipamentos.');
     if(itens.length===0) return mostrarErroForm('Escolha ao menos um equipamento e use o + para a quantidade.');
+    var operador = lerOperador('op-loc-in', mostrarErroForm);
+    if(operador===null) return;
 
     var btn = document.getElementById('btn-registrar');
     if(btn.disabled) return;
@@ -1556,6 +1636,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         quemPegou: quem,
         obs: document.getElementById('f-obs').value.trim(),
         itens: itens,
+        operador: operador || undefined,
         idReq: state.reqLocacao
       });
       aplicarDados(resp);
@@ -1565,7 +1646,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       document.getElementById('f-obs').value=''; document.getElementById('f-data').value=hoje();
       resetItens();
       render();
-      showToast(resp && resp.repetido ? 'Essa locação já tinha sido registrada — confira na lista' : ('Locação registrada'+(resp && resp.usuario ? ' por '+resp.usuario : '')));
+      showToast(resp && resp.repetido ? 'Essa locação já tinha sido registrada — confira na lista' : ('Locação registrada'+(quemFicou(resp, operador) ? ' por '+quemFicou(resp, operador) : '')));
+      if(operador){ guardarOperador(operador); document.getElementById('op-loc-in').value = ''; atualizarUsuario(); }
       mostrarAtalho('locacao', quem);
     }catch(e){ mostrarErroForm('Não deu pra salvar: '+comDica(e)); }
     finally{ ocupado--; btn.disabled=false; btn.innerHTML = icon('plus',15)+'Registrar locação'; }
@@ -1578,6 +1660,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     }).filter(function(d){ return d.qtd>0; });
     var erroEl = document.getElementById('dev-erro');
     if(devolucoes.length===0){ if(erroEl){ erroEl.textContent='Marque ao menos um equipamento que voltou.'; erroEl.classList.add('on'); } return; }
+    var operador = lerOperador('op-dev-in', function(m){ if(erroEl){ erroEl.textContent = m; erroEl.classList.add('on'); } });
+    if(operador===null) return;
 
     var btn = document.querySelector('[data-acao="confirmar-dev"][data-seq="'+seq+'"]');
     if(btn && btn.disabled) return;
@@ -1589,12 +1673,14 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         data: (document.getElementById('dev-data')||{}).value || hoje(),
         obs: (document.getElementById('dev-obs')||{}).value || '',
         devolucoes: devolucoes,
+        operador: operador || undefined,
         idReq: state.reqDev
       });
       aplicarDados(resp);
       state.devAberta = null; state.reqDev = null;
       render();
-      showToast(resp && resp.repetido ? 'Essa devolução já tinha sido registrada — confira na lista' : ('Devolução registrada'+(resp && resp.usuario ? ' por '+resp.usuario : '')));
+      showToast(resp && resp.repetido ? 'Essa devolução já tinha sido registrada — confira na lista' : ('Devolução registrada'+(quemFicou(resp, operador) ? ' por '+quemFicou(resp, operador) : '')));
+      guardarOperador(operador);
     }catch(e){
       if(erroEl){ erroEl.textContent='Não deu pra salvar: '+comDica(e); erroEl.classList.add('on'); }
       if(btn){ btn.disabled=false; btn.innerHTML=icon('check',14)+'Confirmar devolução'; }
@@ -1727,6 +1813,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     else if(t.id==='vd-valor'){ t.value = mascaraDinheiro(t.value); state.valorManual = true; atualizarResto(); }
     else if(t.id==='pag-valor'){ t.value = mascaraDinheiro(t.value); atualizarRestoPag(); }
     else if(t.id==='item-preco-in'){ t.value = mascaraDinheiro(t.value); }
+    else if(t.classList && t.classList.contains('op-in')){
+      var caixaOp = t.closest('.dev-painel, .pag-painel, .card-form');
+      var assinaOp = caixaOp ? caixaOp.querySelector('.assina') : null;
+      if(assinaOp) assinaOp.innerHTML = conteudoAssinatura(normOperador(t.value));
+    }
   });
   document.addEventListener('keydown', function(ev){
     if(ev.key==='Escape'){ fecharPicker(); return; }
@@ -1798,6 +1889,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     state.usuario = ''; atualizarUsuario();
     state.loja = null; state.lojaAtiva = false; state.pagAberto = null; state.pagMarcas = null; state.reqPag = null; state.atalho = null;
     resetVenda(); state.reqVenda = novoIdReq();
+    document.getElementById('op-loc-in').value = ''; document.getElementById('op-loja-in').value = '';
+    state.lojaCompleta = false; state.pedeNome = false;
     resetPessoa(); resetItens(); limparErroForm();
     document.getElementById('f-obs').value = '';
     state.reqLocacao = novoIdReq();
@@ -1979,6 +2072,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       pagamento.valorCentavos = valor;
       pagamento.restante = (valor<total) ? ((document.querySelector('input[name="vd-resto"]:checked')||{}).value || 'depois') : 'depois';
     }
+    var operador = lerOperador('op-loja-in', erroVenda);
+    if(operador===null) return;
     var btn = document.getElementById('btn-vender');
     if(btn.disabled) return;
     btn.disabled = true; btn.innerHTML = 'Salvando…';
@@ -1990,14 +2085,16 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         cliente: quem,
         obs: document.getElementById('vd-obs').value.trim(),
         itens: itens, totalCentavos: total, pagamento: pagamento,
+        operador: operador || undefined,
         idReq: state.reqVenda
       });
       aplicarDados(resp);
       state.reqVenda = novoIdReq();
       state.filtroLoja = 'todas';
       resetVenda();
+      if(operador){ guardarOperador(operador); document.getElementById('op-loja-in').value = ''; atualizarUsuario(); }
       render();
-      showToast(resp && resp.repetido ? 'Essa venda já tinha sido registrada — confira na lista' : ('Venda registrada'+(resp && resp.usuario ? ' por '+resp.usuario : '')));
+      showToast(resp && resp.repetido ? 'Essa venda já tinha sido registrada — confira na lista' : ('Venda registrada'+(quemFicou(resp, operador) ? ' por '+quemFicou(resp, operador) : '')));
       mostrarAtalho('loja', quem);
     }catch(e){
       if(e && e.codigo==='PRECO'){
@@ -2135,6 +2232,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         + '<label class="resto-op"><input type="radio" name="pag-resto" value="depois" checked>Fica para pagar depois</label>'
         + '<label class="resto-op"><input type="radio" name="pag-resto" value="desconto">Foi desconto</label></div>'
         + '<div style="margin-top:10px"><label class="rot" for="pag-obs">Observações <em>(opcional)</em></label><input id="pag-obs" class="input" placeholder="Pix, dinheiro, cartão…"></div>'
+        + (state.pedeNome ? '<div class="operador" style="margin-top:10px"><label class="rot" for="op-pag-in">Seu nome <em>(obrigatório na senha Geral)</em></label><input id="op-pag-in" class="input op-in" list="lista-operadores" autocomplete="off" autocapitalize="words" maxlength="40" placeholder="Quem está recebendo?"></div>' : '')
         + '<p id="pag-erro" class="erro" style="margin:10px 0 0"></p>'
         + (state.usuario ? '<p class="assina on" style="margin:12px 0 0">'+conteudoAssinatura()+'</p>' : '')
         + '<div class="acoes"><button type="button" class="bt bt-verde" data-acao="confirmar-pag" data-seq="'+g.seq+'">'+icon('check',14)+'Confirmar pagamento</button>'
@@ -2146,7 +2244,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       : '';
     return '<article class="t-card '+(g.paga ? 't-devolvido' : 't-fora')+'">'
       + '<div class="t-topo"><div style="min-width:0">'
-      + '<div><span class="n-chip">Nº '+('0000'+g.seq).slice(-4)+'</span><span class="t-quem">'+esc(g.cliente)+'</span></div>'
+      + '<div>'+(state.lojaCompleta ? '<span class="n-chip">Nº '+('0000'+g.seq).slice(-4)+'</span>' : '')+'<span class="t-quem">'+esc(g.cliente)+'</span></div>'
       + '<div class="t-meta"><span>'+icon('cal',13)+'Vendido em '+fmt(g.data)+'</span><span>'+icon('sacola',13)+nItens+' '+(nItens===1?'item':'itens')+'</span>'
       + (g.registradoPor ? '<span class="t-reg">'+icon('user',13)+'Registrado por '+esc(g.registradoPor)+'</span>' : '')
       + '</div></div>'
@@ -2163,6 +2261,15 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(state.erroCarga){
       alvo.innerHTML = '<div class="vazio"><div class="circ">'+icon('semrede',24)+'</div><h4>Não consegui carregar os dados</h4><p>'+esc(state.erroCarga)+'</p>'
         + '<button type="button" class="bt bt-mini bt-tentar" data-acao="recarregar">'+icon('atualizar',14)+'Tentar de novo</button></div>';
+      return;
+    }
+    if(!state.lojaCompleta){
+      // o servidor já manda só as vendas de hoje; com um servidor antigo, a tela filtra pelo dia do aparelho
+      var jaFiltrado = !!(state.loja && state.loja.resumo && state.loja.resumo.soHoje), dia = hoje();
+      var doDia = agruparVendas().filter(function(g){ return jaFiltrado || g.data===dia; });
+      alvo.innerHTML = doDia.length ? doDia.map(cartaoVenda).join('')
+        : '<div class="vazio"><div class="circ">'+icon('sacola',24)+'</div><h4>Nenhuma venda hoje ainda</h4><p>As vendas registradas hoje aparecem aqui, para conferir.</p></div>';
+      atualizarRestoPag();
       return;
     }
     var q = semAcento(state.buscaLoja.trim());
@@ -2189,7 +2296,14 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     alvo.innerHTML = nota + grupos.map(cartaoVenda).join('');
     atualizarRestoPag();
   }
-  function renderLoja(){ renderResumoLoja(); renderFiltrosLoja(); renderListaLoja(); atualizarTotalVenda(); }
+  function renderLoja(){
+    var completa = !!state.lojaCompleta;
+    document.getElementById('resumo-loja').hidden = !completa;
+    document.getElementById('barra-loja').hidden = !completa;
+    document.getElementById('hoje-loja').hidden = completa || !state.lojaAtiva;
+    if(completa) renderResumoLoja();
+    renderFiltrosLoja(); renderListaLoja(); atualizarTotalVenda();
+  }
   function atualizarRestoPag(){
     var inp = document.getElementById('pag-valor'), box = document.getElementById('pag-resto');
     if(!inp || !box) return;
@@ -2207,6 +2321,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(!(valor>=1)) return falha('Informe o valor recebido.');
     if(valor>g.falta) return falha('O valor é maior do que falta pagar ('+formatarReais(g.falta)+').');
     var resto = (valor<g.falta) ? ((document.querySelector('input[name="pag-resto"]:checked')||{}).value || 'depois') : 'depois';
+    var operador = lerOperador('op-pag-in', falha);
+    if(operador===null) return;
     var btn = document.querySelector('[data-acao="confirmar-pag"][data-seq="'+seq+'"]');
     if(btn && btn.disabled) return;
     if(btn){ btn.disabled = true; btn.innerHTML = 'Salvando…'; }
@@ -2215,6 +2331,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     try{
       var resp = await servidor('registrarPagamento', {
         numero: seq, valorCentavos: valor, restante: resto,
+        operador: operador || undefined,
         data: (document.getElementById('pag-data')||{}).value || hoje(),
         obs: ((document.getElementById('pag-obs')||{}).value || '').trim(),
         idReq: state.reqPag
@@ -2222,7 +2339,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       aplicarDados(resp);
       state.pagAberto = null; state.reqPag = null;
       render();
-      showToast(resp && resp.repetido ? 'Esse pagamento já tinha sido registrado — confira na lista' : ('Pagamento registrado'+(resp && resp.usuario ? ' por '+resp.usuario : '')));
+      showToast(resp && resp.repetido ? 'Esse pagamento já tinha sido registrado — confira na lista' : ('Pagamento registrado'+(quemFicou(resp, operador) ? ' por '+quemFicou(resp, operador) : '')));
+      guardarOperador(operador);
     }catch(e){
       falha('Não deu pra salvar: '+comDica(e));
       if(btn){ btn.disabled = false; btn.innerHTML = icon('check',14)+'Confirmar pagamento'; }
