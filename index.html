@@ -11,6 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SOF">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>try{if(localStorage.getItem('sof_tema')==='escuro')document.documentElement.setAttribute('data-tema','escuro')}catch(e){}</script>
 <title>SOF — AudioSom</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -493,6 +494,135 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 .ed-painel .acoes{flex-wrap:wrap}
 .ed-painel .acoes .bt-fantasma{flex:1 1 100%;text-align:center;background:#EEF4F9;padding:12px;font-size:13px;font-weight:700}
 @media(max-width:639px){ .t-topo{flex-wrap:nowrap} }
+/* ===== botão do modo claro / escuro (no topo, que é escuro nos dois modos) ===== */
+.bt-tema{position:relative;display:inline-grid;place-items:center;width:40px;height:40px;flex:none;border-radius:50%;color:#CFE3F2;border:1px solid rgba(122,196,244,.28);background:rgba(255,255,255,.05);transition:background .16s,color .16s,transform .12s}
+.bt-tema::after{content:"";position:absolute;inset:-5px;border-radius:50%} /* área de toque de 48 px */
+/* na hora de trocar o modo, tudo muda junto (sem uma parte animar e outra não) */
+.trocando-tema *,.trocando-tema *::before,.trocando-tema *::after{transition:none!important}
+.bt-tema:hover{background:rgba(255,255,255,.12);color:#fff}
+.bt-tema:active{transform:scale(.92)}
+/* celular: lua/sol em cima e o Sair (com o nome) embaixo, para o título do topo não ficar espremido */
+@media(max-width:519px){.topo-acoes{flex-direction:column;align-items:flex-end;gap:6px}}
+
+/* ================= MODO ESCURO =================
+   Ligado pelo botão lua/sol (data-tema="escuro" no <html>). A escolha fica guardada no aparelho (sof_tema).
+   Nada aqui muda o modo claro: só vale com data-tema="escuro". */
+:root[data-tema="escuro"]{
+  color-scheme:dark;
+  background:#0A1520;
+  --papel:#0A1520; --branco:#102030;
+  --tx-1:#E8F0F7; --tx-2:#A8BDD0; --tx-3:#7F98AF;
+  --linha:#223A50;
+  --azul:#45AEEC; --azul-claro:#7CC8F4; --azul-suave:#12314A; --azul-escuro:#8FD0F7;
+  --ambar:#F5B65A; --ambar-bg:#3A2810;
+  --verde:#4ADE9A; --verde-bg:#0E3527;
+  --roxo:#B69CFF; --roxo-claro:#C9B5FF; --roxo-escuro:#CDBBFF; --roxo-suave:#251B47;
+  --sombra-1:0 1px 2px rgba(0,0,0,.35),0 10px 30px -18px rgba(0,0,0,.6);
+  --sombra-2:0 2px 4px rgba(0,0,0,.4),0 18px 44px -20px rgba(0,0,0,.7);
+}
+[data-tema="escuro"] body{background-image:radial-gradient(900px 420px at 88% -8%,rgba(13,127,197,.16),transparent 62%),
+  radial-gradient(700px 340px at -10% 12%,rgba(79,179,238,.06),transparent 60%)}
+[data-tema="escuro"] :focus-visible{outline-color:rgba(69,174,236,.65)}
+/* topo, tela de senha e botões coloridos: iguais aos do modo claro */
+[data-tema="escuro"] .topo::after{background:linear-gradient(90deg,#0D7FC5,#4FB3EE 38%,transparent 78%)}
+[data-tema="escuro"] .eq i,[data-tema="escuro"] .login-eq i{background:linear-gradient(180deg,#4FB3EE,#0D7FC5)}
+[data-tema="escuro"] .stat-hero{background:linear-gradient(135deg,#0D7FC5 0%,#085A8E 100%)}
+[data-tema="escuro"] .h-ic,[data-tema="escuro"] .bt-mini{background:linear-gradient(135deg,#4FB3EE,#085A8E)}
+[data-tema="escuro"] .bt-azul,[data-tema="escuro"] .abas button.on[data-aba="locacao"]{background:linear-gradient(135deg,#4FB3EE -20%,#0D7FC5 45%,#085A8E 120%)}
+[data-tema="escuro"] .stat-hero.hero-loja{background:linear-gradient(135deg,#6D3FD6 0%,#4C1D95 100%)}
+[data-tema="escuro"] .h-ic-loja,[data-tema="escuro"] .bt-mini.bt-mini-loja{background:linear-gradient(135deg,#9F7AEA,#4C1D95)}
+[data-tema="escuro"] .bt-loja,[data-tema="escuro"] .abas button.on[data-aba="loja"]{background:linear-gradient(135deg,#9F7AEA -20%,#6D3FD6 45%,#4C1D95 120%)}
+/* campos */
+[data-tema="escuro"] .input,[data-tema="escuro"] .pfield{background:#0E1D2C;border-color:#34506C}
+[data-tema="escuro"] .input::placeholder{color:#6F8AA3;opacity:1}
+[data-tema="escuro"] .input:focus{border-color:var(--azul)}
+[data-tema="escuro"] .input.ok{border-color:#2E9C72}
+[data-tema="escuro"] .input.bad{border-color:#D9605A;box-shadow:0 0 0 4px rgba(217,96,90,.2)}
+[data-tema="escuro"] .input[readonly],[data-tema="escuro"] .pfield.travado{background:#0C1926}
+[data-tema="escuro"] .pfield:hover{border-color:#4A6B8A}
+[data-tema="escuro"] .pfield.filled{border-color:#3C6488;background:linear-gradient(0deg,rgba(69,174,236,.08),rgba(69,174,236,.08)),#0E1D2C}
+[data-tema="escuro"] .operador .input{border-color:#7A5A1E;background:#1E1A10}
+[data-tema="escuro"] .operador .input:focus{background:#0E1D2C}
+[data-tema="escuro"] .item-caixa{background:#0B1724}
+[data-tema="escuro"] .bt-lixo:hover{color:#FF9C7A;background:#3A1D14}
+/* − número + */
+[data-tema="escuro"] .stepper{background:#13263A}
+[data-tema="escuro"] .st-bt{background:#1C3249;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+[data-tema="escuro"] .st-bt:hover{background:#24405C}
+[data-tema="escuro"] .st-in{background:#0E1D2C;border-color:#34506C}
+[data-tema="escuro"] .st-in:focus{border-color:var(--azul)}
+[data-tema="escuro"] .card-loja .st-in:focus,[data-tema="escuro"] .ed-painel.ed-loja .st-in:focus{border-color:#9F7AEA;box-shadow:0 0 0 3px rgba(159,122,234,.2)}
+[data-tema="escuro"] .bt-add{border-color:#34506C}
+[data-tema="escuro"] .bt-add:hover{border-color:var(--azul)}
+[data-tema="escuro"] .card-loja .bt-add,[data-tema="escuro"] .ed-painel.ed-loja .bt-add{border-color:#4A3A7A}
+[data-tema="escuro"] .card-loja .bt-add:hover,[data-tema="escuro"] .ed-painel.ed-loja .bt-add:hover{border-color:var(--roxo)}
+/* botões claros e avisos */
+[data-tema="escuro"] .bt-fantasma:hover,[data-tema="escuro"] .p-x:hover,[data-tema="escuro"] .p-voltar:hover,
+[data-tema="escuro"] .atalho-x:hover,[data-tema="escuro"] .login-ver:hover{background:#1A2E44}
+[data-tema="escuro"] .bt-claro,[data-tema="escuro"] .ed-painel .acoes .bt-fantasma{background:#1A2E44}
+[data-tema="escuro"] .bt-claro:hover{background:#22394F}
+[data-tema="escuro"] .erro{background:#3B1716;color:#FFA59D}
+[data-tema="escuro"] .cli-hint.bad,[data-tema="escuro"] .ed-total .ed-sit.ruim{color:#FFA59D}
+[data-tema="escuro"] .faixa-rede{background:#3B1716;color:#FFB3AD;border-bottom-color:#5C2622}
+[data-tema="escuro"] .faixa-treino{border-bottom-color:#5C4216}
+[data-tema="escuro"] .assina{border-color:#1F4766}
+[data-tema="escuro"] .bt-tirar{color:#FFA59D;background:#102030;border-color:#6B2A26}
+[data-tema="escuro"] .bt-tirar:hover{background:#3B1716}
+[data-tema="escuro"] .bt-tirar.confirmar{background:#B3261E;color:#fff;border-color:#B3261E}
+/* filtros e abas */
+[data-tema="escuro"] .seg{background:#0B1724}
+[data-tema="escuro"] .seg button.on{background:#1C3249;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+[data-tema="escuro"] .abas{background:rgba(10,21,32,.92)}
+[data-tema="escuro"] .abas button:not(.on):hover{background:#16293D}
+/* cartões da lista */
+[data-tema="escuro"] .n-chip{background:#172A3E}
+[data-tema="escuro"] .t-obs{background:#0B1724}
+[data-tema="escuro"] .itens-lista{border-top-color:#1B2F43}
+[data-tema="escuro"] .itens-lista li{border-bottom-color:#172A3D}
+[data-tema="escuro"] .prog{background:#1B2F43}
+[data-tema="escuro"] .bt-lapis{background:#16293D}
+[data-tema="escuro"] .bt-lapis:hover{background:var(--azul-suave)}
+[data-tema="escuro"] .t-alt{color:#F3C27A;background:#2A2012;border-color:#4E3A1A}
+[data-tema="escuro"] .vazio{border-color:#2B4660;background:rgba(16,32,48,.6)}
+[data-tema="escuro"] .nota-janela{background:rgba(16,32,48,.7);border-color:#2B4660}
+[data-tema="escuro"] .esq{background:linear-gradient(100deg,#13253A 30%,#1B3249 46%,#13253A 60%);background-size:220% 100%}
+[data-tema="escuro"] .rodape{background:rgba(16,32,48,.7)}
+/* devolução */
+[data-tema="escuro"] .dev-painel{border-color:#1E5A45;background:linear-gradient(0deg,rgba(16,185,129,.07),rgba(16,185,129,.07)),#102030}
+[data-tema="escuro"] .bt-tudo:hover{background:#1A3D5A}
+[data-tema="escuro"] .dev-item{background:#142739}
+[data-tema="escuro"] .dev-item.completo{border-color:#22724F;background:linear-gradient(0deg,rgba(16,185,129,.12),rgba(16,185,129,.12)),#142739}
+[data-tema="escuro"] .dev-item.parcial{border-color:#2D6A96;background:linear-gradient(0deg,rgba(69,174,236,.10),rgba(69,174,236,.10)),#142739}
+[data-tema="escuro"] .bolinha{border-color:#3E5A76;background:#0E1D2C}
+[data-tema="escuro"] .dev-item.parcial .bolinha{background:#0E1D2C}
+/* alteração (lápis) */
+[data-tema="escuro"] .ed-painel{border-color:#2B4660;background:#0C1A28}
+[data-tema="escuro"] .ed-painel.ed-loja{border-color:#3B2E66;background:#130F24}
+[data-tema="escuro"] .ed-painel .item-caixa{background:#102030}
+/* loja */
+[data-tema="escuro"] .total-venda,[data-tema="escuro"] .ed-total{border-color:#3B2E66}
+[data-tema="escuro"] .pag-op{background:#142739}
+[data-tema="escuro"] .pag-op.on{background:var(--roxo-suave)}
+[data-tema="escuro"] .resto{border-color:#5C4216}
+[data-tema="escuro"] .v-tot{border-top-color:#1B2F43}
+[data-tema="escuro"] .pag-painel{border-color:#3B2E66;background:linear-gradient(0deg,rgba(182,156,255,.06),rgba(182,156,255,.06)),#102030}
+[data-tema="escuro"] .atalho{background:#102030;border-color:#3B2E66}
+[data-tema="escuro"] .atalho.para-loc{border-color:#2D6A96}
+/* painel A–Z e cadastros */
+[data-tema="escuro"] .veu{background:rgba(0,0,0,.6)}
+[data-tema="escuro"] .painel{background:#102030;box-shadow:0 0 0 1px #223A50,0 -10px 60px rgba(0,0,0,.6)}
+[data-tema="escuro"] .letras button{background:#16293D}
+[data-tema="escuro"] .letras button:hover{background:#1E3650}
+[data-tema="escuro"] .letras button.on{background:linear-gradient(135deg,#4FB3EE,#085A8E)}
+[data-tema="escuro"] .letras span{color:#3E5770;background:#0C1926}
+[data-tema="escuro"] .p-lista::-webkit-scrollbar-thumb{background:#2B4660}
+[data-tema="escuro"] .pk-row,[data-tema="escuro"] .pk-item{border-bottom-color:#1A2C3F}
+[data-tema="escuro"] .pk-edit{border-left-color:#1A2C3F}
+[data-tema="escuro"] .pk-av{background:linear-gradient(135deg,#173A57,#12304A)}
+/* tela de senha e avisos que aparecem embaixo */
+[data-tema="escuro"] .login-card{background:#102030;box-shadow:0 0 0 1px #223A50,0 30px 70px -24px rgba(0,0,0,.7)}
+[data-tema="escuro"] .toast{background:#1F3A56;box-shadow:0 0 0 1px #2E5577,0 16px 40px -12px rgba(0,0,0,.7)}
+
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
@@ -513,6 +643,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       </div>
       <div class="topo-acoes">
         <span id="tag-status" class="pilula" style="visibility:hidden"><span class="dot"></span><span id="tag-tx">Conectando…</span></span>
+        <button type="button" id="bt-tema" class="bt-tema" data-acao="tema" aria-label="Mudar para o modo escuro" title="Modo escuro"></button>
         <button type="button" id="bt-sair" class="bt-sair" data-acao="sair" hidden aria-label="Sair"><span id="bt-sair-ic" data-ic="sair" data-tam="15"></span><span id="usuario-nome" class="bt-sair-nome"></span><span class="bt-sair-sep" aria-hidden="true"></span><span id="bt-sair-tx" class="bt-sair-tx">Sair</span></button>
       </div>
     </div>
@@ -829,7 +960,9 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     sobe:'<path d="M7 17 17 7"/><path d="M8 7h9v9"/>',
     eq:'<path d="M4 18v-6M9 18V6M14 18v-9M19 18v-4"/>',
     sacola:'<path d="M5.5 8h13l-1.1 12.1a1 1 0 0 1-1 .9H7.6a1 1 0 0 1-1-.9Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
-    dinheiro:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'
+    dinheiro:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>',
+    lua:'<path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/>',
+    sol:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>'
   };
   function icon(nome, tam){
     tam = tam || 16;
@@ -852,6 +985,36 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   var picker = { tipo: null, letra: null, alvoItem: null, destino: 'loc', item: null, edIdx: null, equip: null };
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  // ================= MODO CLARO / ESCURO =================
+  // Botão lua/sol no topo. A escolha fica guardada só neste aparelho (sof_tema); o normal é o claro.
+  // O <head> já aplica o modo guardado antes de a tela aparecer (não pisca ao abrir).
+  var CHAVE_TEMA = 'sof_tema';
+  function temaEscuro(){ return document.documentElement.getAttribute('data-tema')==='escuro'; }
+  function pintarBotaoTema(){
+    var bt = document.getElementById('bt-tema'); if(!bt) return;
+    var escuro = temaEscuro();
+    bt.innerHTML = icon(escuro ? 'sol' : 'lua', 18);
+    bt.setAttribute('aria-label', escuro ? 'Mudar para o modo claro' : 'Mudar para o modo escuro');
+    bt.setAttribute('title', escuro ? 'Modo claro' : 'Modo escuro');
+  }
+  function aplicarTema(escuro){
+    var raiz = document.documentElement;
+    raiz.classList.add('trocando-tema');
+    if(escuro) raiz.setAttribute('data-tema','escuro');
+    else raiz.removeAttribute('data-tema');
+    pintarBotaoTema();
+    void raiz.offsetHeight; // aplica as cores novas já sem animação
+    setTimeout(function(){ raiz.classList.remove('trocando-tema'); }, 60);
+  }
+  function trocarTema(){
+    var escuro = !temaEscuro();
+    aplicarTema(escuro);
+    try { localStorage.setItem(CHAVE_TEMA, escuro ? 'escuro' : 'claro'); } catch(e){}
+  }
+  // outra aba do mesmo aparelho trocou o modo: acompanha
+  window.addEventListener('storage', function(ev){ if(ev.key===CHAVE_TEMA) aplicarTema(ev.newValue==='escuro'); });
+  pintarBotaoTema();
   // data de HOJE no relógio do aparelho (antes usava o horário de Londres e virava o dia às 21h)
   function hoje(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
   function fmt(iso){ if(!iso) return '—'; var p=String(iso).split('-'); return esc(p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : iso); }
@@ -2107,6 +2270,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     var acao = alvo.getAttribute('data-acao');
     // entrar / sair / tentar de novo
     if(acao==='sair'){ sair(); return; }
+    if(acao==='tema'){ trocarTema(); return; }
     if(acao==='trocar'){ trocarPessoa(); return; }
     // loja
     if(acao==='picker-pessoa-loja'){ abrirPicker('pessoa', null, 'loja'); return; }
