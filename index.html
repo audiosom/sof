@@ -503,6 +503,72 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 .bt-tema:active{transform:scale(.92)}
 /* celular: lua/sol em cima e o Sair (com o nome) embaixo, para o título do topo não ficar espremido */
 @media(max-width:519px){.topo-acoes{flex-direction:column;align-items:flex-end;gap:6px}}
+/* ===== versão 10: aba Lista (segunda a sábado). Só quem o servidor deixar escreve; todos riscam ===== */
+.abas button[hidden]{display:none}
+.abas button.on[data-aba="lista"]{color:#fff;background:linear-gradient(135deg,#34D399 -20%,#047857 45%,#064E3B 120%);box-shadow:0 8px 18px -10px rgba(4,120,87,.7)}
+/* três abas no celular: menos sobra dos lados para caber "Locação" inteiro */
+@media(max-width:439px){.abas{gap:4px;padding:5px}.abas button{gap:6px;padding:10px 6px;font-size:14.5px}}
+@media(max-width:359px){.abas button{font-size:13.5px}.abas button > span[data-ic]{display:none}}
+.toast.ruim .ic{color:#FF9A8F}
+.ls-topo{padding:16px;margin:0 0 14px}
+.ls-cab{display:flex;align-items:flex-start;gap:12px}
+.ls-cab .h-ic{flex:none}
+.ls-cab h2{font-family:var(--f-display);font-size:17px;font-weight:700;line-height:1.25}
+.ls-cab p{font-size:12.5px;line-height:1.45;color:var(--tx-2);margin-top:3px}
+.h-ic-lista{background:linear-gradient(135deg,#34D399,#065F46);box-shadow:0 6px 14px -6px rgba(4,120,87,.6)}
+.ls-dias{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:14px}
+.ls-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;padding:6px 2px;border-radius:12px;background:#F3F7FB;border:1.5px solid var(--linha);font-size:13px;font-weight:800;color:var(--tx-2);transition:background .14s,border-color .14s}
+.ls-chip:hover{border-color:#A9C6DC}
+.ls-chip small{display:flex;align-items:center;justify-content:center;min-height:15px;font-size:12px;font-weight:800;line-height:1;color:var(--tx-3)}
+.ls-chip.pend small{color:var(--ambar)}
+.ls-chip.ok small{color:var(--verde)}
+.ls-chip.hoje{border-color:#6FCFA6;background:#E6F7EF;color:#065F46}
+.ls-blocos{display:grid;gap:14px}
+@media(min-width:760px){.ls-blocos{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+@media(min-width:1100px){.ls-blocos{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ls-dia{position:relative;overflow:hidden;padding:13px 14px 12px 18px;scroll-margin-top:84px}
+.ls-dia::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#D5E3EE}
+.ls-dia.tem::before{background:linear-gradient(180deg,#F5B23C,#D97706)}
+.ls-dia.feito::before{background:linear-gradient(180deg,#34D399,#059669)}
+.ls-dia.hoje{border-color:#9CDDBF;box-shadow:0 0 0 3px rgba(16,185,129,.12),var(--sombra-1)}
+.ls-dia-topo{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px}
+.ls-dia-topo h3{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:17px;font-weight:700;color:var(--tx-1)}
+.ls-hoje{font-family:var(--f-body);font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:#047857;border-radius:999px;padding:3px 8px}
+.ls-conta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--tx-2);white-space:nowrap}
+.ls-conta.pend{color:var(--ambar)}
+.ls-conta.ok{color:var(--verde)}
+.ls-itens{list-style:none;margin-top:4px}
+.ls-item{display:flex;align-items:flex-start;gap:2px;border-top:1px solid #EEF3F8}
+.ls-item:first-child{border-top:none}
+.ls-marcar{flex:1 1 auto;min-width:0;display:flex;align-items:flex-start;gap:12px;padding:9px 6px 9px 0;text-align:left;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.ls-bola{width:30px;height:30px;margin-top:1px;border-radius:50%;border:2.5px solid #CBDCEA;background:#fff;display:grid;place-items:center;color:transparent;flex:none;transition:background .16s,border-color .16s,color .16s,transform .12s}
+.ls-marcar:hover .ls-bola{border-color:#9DBAD2}
+.ls-marcar:active .ls-bola{transform:scale(.9)}
+.ls-item.riscado .ls-bola{background:var(--verde-vivo);border-color:var(--verde-vivo);color:#fff}
+.ls-item.espera .ls-bola{opacity:.7}
+.ls-tx{flex:1;min-width:0;padding-top:5px}
+.ls-texto{display:block;font-size:15px;font-weight:600;line-height:1.35;color:var(--tx-1);overflow-wrap:anywhere;transition:color .18s}
+.ls-item.riscado .ls-texto{text-decoration:line-through;text-decoration-color:var(--verde-vivo);text-decoration-thickness:2px;color:#5F7790} /* apagadinho, mas ainda dá para ler */
+.ls-meta{display:block;font-size:11.5px;line-height:1.35;color:var(--tx-2);margin-top:3px}
+.ls-item.riscado .ls-meta{color:var(--verde);font-weight:600}
+.ls-lapis{flex:none;width:44px;height:44px;margin-top:2px;border-radius:12px;display:grid;place-items:center;color:var(--tx-3);transition:background .14s,color .14s}
+.ls-lapis:hover{background:#F1F6FA;color:var(--tx-1)}
+.ls-vazio{font-size:13px;color:var(--tx-2);padding:8px 0 3px}
+.ls-novo{margin-top:8px}
+.ls-novo-tx,.ls-ed-tx{display:block;min-height:46px;line-height:1.4;overflow-y:hidden}
+.ls-novo-tx:focus,.ls-ed-tx:focus{border-color:#10B981;box-shadow:0 0 0 4px rgba(16,185,129,.14)}
+.bt-lista{width:100%;padding:12px 16px;font-size:14px;color:#fff;background:linear-gradient(135deg,#34D399 -20%,#047857 45%,#064E3B 120%);box-shadow:0 10px 22px -10px rgba(4,120,87,.6)}
+.bt-lista:hover{filter:brightness(1.06)}
+.ls-novo .bt-lista{margin-top:8px}
+.ls-novo .bt-lista[hidden]{display:none}
+.ls-novo .erro,.ls-ed .erro{margin:8px 0 0}
+.ls-item.ls-editando{display:block}
+.ls-ed{margin:6px 0 10px;border:1.5px solid #A7E3C8;background:#F4FBF8;border-radius:14px;padding:12px}
+.ls-ed .rot{color:var(--tx-2)}
+.ls-ed-acoes{display:flex;gap:8px;margin-top:10px}
+.ls-ed-acoes > *{flex:1 1 0}
+.ls-ed-acoes .bt-fantasma{text-align:center;background:#EEF4F9;padding:12px;font-size:13px;font-weight:700}
+.ls-ed .bt-tirar{margin-top:8px}
 
 /* ================= MODO ESCURO =================
    Ligado pelo botão lua/sol (data-tema="escuro" no <html>). A escolha fica guardada no aparelho (sof_tema).
@@ -622,6 +688,23 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 /* tela de senha e avisos que aparecem embaixo */
 [data-tema="escuro"] .login-card{background:#102030;box-shadow:0 0 0 1px #223A50,0 30px 70px -24px rgba(0,0,0,.7)}
 [data-tema="escuro"] .toast{background:#1F3A56;box-shadow:0 0 0 1px #2E5577,0 16px 40px -12px rgba(0,0,0,.7)}
+/* lista (versão 10) */
+[data-tema="escuro"] .h-ic-lista{background:linear-gradient(135deg,#34D399,#065F46)}
+[data-tema="escuro"] .ls-chip{background:#0E1D2C;border-color:#223A50}
+[data-tema="escuro"] .ls-chip:hover{border-color:#3C6488}
+[data-tema="escuro"] .ls-chip.hoje{background:#0E3527;border-color:#22724F;color:#7FE3B5}
+[data-tema="escuro"] .ls-dia::before{background:#2B4660}
+[data-tema="escuro"] .ls-dia.tem::before{background:linear-gradient(180deg,#F5B23C,#D97706)}
+[data-tema="escuro"] .ls-dia.feito::before{background:linear-gradient(180deg,#34D399,#059669)}
+[data-tema="escuro"] .ls-dia.hoje{border-color:#22724F;box-shadow:0 0 0 3px rgba(16,185,129,.16),var(--sombra-1)}
+[data-tema="escuro"] .ls-item{border-top-color:#1B2F43}
+[data-tema="escuro"] .ls-bola{border-color:#3E5A76;background:#0E1D2C}
+[data-tema="escuro"] .ls-marcar:hover .ls-bola{border-color:#5A7A98}
+[data-tema="escuro"] .ls-item.riscado .ls-texto{color:var(--tx-3);text-decoration-color:#2FBF85}
+[data-tema="escuro"] .ls-lapis:hover{background:#16293D}
+[data-tema="escuro"] .ls-novo-tx:focus,[data-tema="escuro"] .ls-ed-tx:focus{border-color:#34D399;box-shadow:0 0 0 4px rgba(52,211,153,.16)}
+[data-tema="escuro"] .ls-ed{border-color:#22724F;background:#0C1F1A}
+[data-tema="escuro"] .ls-ed-acoes .bt-fantasma{background:#1A2E44}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -652,9 +735,10 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   <div id="faixa-treino" class="faixa faixa-treino"><span data-ic="eq" data-tam="16"></span><span>Modo treino — dados de exemplo; nada é salvo na planilha.</span></div>
 
   <main class="wrap">
-    <nav id="abas" class="abas" role="tablist" aria-label="Locação ou Loja" hidden>
+    <nav id="abas" class="abas" role="tablist" aria-label="Locação, Loja ou Lista" hidden>
       <button type="button" data-aba="locacao" role="tab" class="on" aria-selected="true"><span data-ic="caixa" data-tam="17"></span>Locação</button>
       <button type="button" data-aba="loja" role="tab" aria-selected="false"><span data-ic="sacola" data-tam="17"></span>Loja</button>
+      <button type="button" data-aba="lista" role="tab" aria-selected="false" hidden><span data-ic="lista" data-tam="17"></span>Lista</button>
     </nav>
 
     <div id="view-locacao" class="view-aba">
@@ -801,8 +885,23 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       </div>
     </div>
 
+    <!-- ===== LISTA (versão 10): bloco de notas de segunda a sábado ===== -->
+    <div id="view-lista" class="view-aba" hidden>
+      <section class="card ls-topo" aria-labelledby="ls-titulo">
+        <div class="ls-cab">
+          <span class="h-ic h-ic-lista" id="h-ic-lista"></span>
+          <div>
+            <h2 id="ls-titulo">Lista da semana</h2>
+            <p id="ls-sub"></p>
+          </div>
+        </div>
+        <div id="ls-dias" class="ls-dias"></div>
+      </section>
+      <div id="ls-blocos" class="ls-blocos"></div>
+    </div>
+
     <footer class="rodape">
-      <strong>Os dados ficam na planilha da AudioSom no Google</strong>, com backup automático todo dia. Aqui aparecem as locações em aberto e as concluídas nos últimos 30 dias; na planilha, as concluídas ficam 1 ano (depois vão para a aba <em>Arquivo</em>). Clientes e equipamentos ficam guardados para sempre e alimentam o painel A–Z. Cada locação guarda quem registrou, e cada devolução, quem recebeu, com data e hora. Na loja, cada venda guarda o preço da época e quem registrou, e cada pagamento, quem recebeu. Toda alteração fica registrada na aba <em>Alterações</em>: quem alterou, quando e o que mudou.<span id="modo-nota"></span>
+      <strong>Os dados ficam na planilha da AudioSom no Google</strong>, com backup automático todo dia. Aqui aparecem as locações em aberto e as concluídas nos últimos 30 dias; na planilha, as concluídas ficam 1 ano (depois vão para a aba <em>Arquivo</em>). Clientes e equipamentos ficam guardados para sempre e alimentam o painel A–Z. Cada locação guarda quem registrou, e cada devolução, quem recebeu, com data e hora. Na loja, cada venda guarda o preço da época e quem registrou, e cada pagamento, quem recebeu. Toda alteração fica registrada na aba <em>Alterações</em>: quem alterou, quando e o que mudou.<span id="nota-lista" hidden> Na aba <em>Lista</em>, cada item fica 7 dias e depois some sozinho, riscado ou não.</span><span id="modo-nota"></span>
     </footer>
   </main>
 
@@ -931,7 +1030,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   </div>
 
   <datalist id="lista-operadores"></datalist>
-  <div id="toast" class="toast"><span class="ic" data-ic="check"></span><span id="toast-tx"></span></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"><span class="ic" data-ic="check"></span><span id="toast-tx"></span></div>
 
 <script>
   // ================= ÍCONES =================
@@ -962,7 +1061,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     sacola:'<path d="M5.5 8h13l-1.1 12.1a1 1 0 0 1-1 .9H7.6a1 1 0 0 1-1-.9Z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
     dinheiro:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>',
     lua:'<path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/>',
-    sol:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>'
+    sol:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/>',
+    lista:'<path d="M11 6h10M11 12h10M11 18h10"/><path d="m3.5 6 1.6 1.6L8.2 4.5"/><path d="m3.5 12 1.6 1.6 3.1-3.1"/><path d="m3.5 18 1.6 1.6 3.1-3.1"/>'
   };
   function icon(nome, tam){
     tam = tam || 16;
@@ -971,6 +1071,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   document.querySelectorAll('[data-ic]').forEach(function(el){ el.innerHTML = icon(el.getAttribute('data-ic'), el.getAttribute('data-tam')||16); });
   document.getElementById('h-ic-plus').innerHTML = icon('plus',16);
   document.getElementById('h-ic-loja').innerHTML = icon('sacola',16);
+  document.getElementById('h-ic-lista').innerHTML = icon('lista',16);
 
   // ================= ESTADO =================
   var state = { movs: [], pessoas: [], equipamentos: [], resumo: null, usuario: '', filtro: 'abertas', busca: '', devAberta: null, devMarcas: null, carregando: true, erroCarga: null, assinatura: '', reqLocacao: '', reqDev: null,
@@ -981,7 +1082,12 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     lojaCompleta: false, pedeNome: false,
     // versão 8: o servidor diz a versão, o dia de hoje e por quantos dias dá para alterar
     versao: 0, hojeServidor: '', diasEdicao: 30, alteracoes: null,
-    edicao: null };   // alteração em andamento: { tipo:'loc'|'venda', seq, cliente, obs, itens, antes, ... }
+    edicao: null,     // alteração em andamento: { tipo:'loc'|'venda', seq, cliente, obs, itens, antes, ... }
+    // versão 10: aba Lista (segunda a sábado). listaSemana = [{id, dia 1…6, texto, escritoEm, riscado, riscadoPor, riscadoEm}]
+    listaAtiva: false, listaSemana: null, podeEscreverLista: false, quemEscreveLista: '',
+    lsEdicao: null,   // item sendo alterado: { id, original, texto, erro, confirmar, salvando, idReq, idReqTexto, idReqApagar }
+    lsRascunho: {}, lsReq: {}, lsErro: {}, lsSalvando: {},   // por dia (1…6): texto ainda não adicionado, { id, texto } do pedido, erro, salvando
+    lsPend: {} };     // riscos tocados e ainda não confirmados pelo servidor: { id: true|false }
   var picker = { tipo: null, letra: null, alvoItem: null, destino: 'loc', item: null, edIdx: null, equip: null };
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -1069,6 +1175,22 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       vendas.forEach(function(v){ seqs[v.seq] = 1; if(v.situacao!=='Paga') abertas[v.seq] = 1; });
       return { totalVendas: Object.keys(seqs).length, aPagar: Object.keys(abertas).length, diasNaTela: 30 };
     }
+    // Lista da semana (versão 10): dia 1 = segunda … 6 = sábado. No treino, quem entra pode escrever e riscar.
+    var lista = [
+      {id:'T1',dia:1,texto:'Caixa JBL VRX932 — 4',escritoEm:textoDH(4,'18:05'),escritoPor:'Cristiano',riscado:true,riscadoPor:'Maicon',riscadoEm:textoDH(3,'08:10')},
+      {id:'T2',dia:1,texto:'Tripé para caixa — 4',escritoEm:textoDH(4,'18:05'),escritoPor:'Cristiano',riscado:true,riscadoPor:'Maicon',riscadoEm:textoDH(3,'08:12')},
+      {id:'T3',dia:3,texto:'Painel de LED P3 — 24 módulos',escritoEm:textoDH(1,'19:30'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''},
+      {id:'T4',dia:3,texto:'Treliça Q30 (3m) — 12',escritoEm:textoDH(1,'19:30'),escritoPor:'Cristiano',riscado:true,riscadoPor:'Júnior',riscadoEm:textoDH(0,'09:02')},
+      {id:'T5',dia:3,texto:'Controladora de LED e os cabos de força',escritoEm:textoDH(1,'19:31'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''},
+      {id:'T6',dia:5,texto:'Mesa de som Yamaha MG16XU',escritoEm:textoDH(0,'08:15'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''},
+      {id:'T7',dia:5,texto:'Cabo XLR 10m — 6',escritoEm:textoDH(0,'08:15'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''},
+      {id:'T8',dia:5,texto:'Microfone sem fio Shure — 2 (com pilhas novas)',escritoEm:textoDH(0,'08:16'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''},
+      {id:'T9',dia:6,texto:'Máquina de fumaça + 1 galão de fluido',escritoEm:textoDH(2,'17:50'),escritoPor:'Cristiano',riscado:false,riscadoPor:'',riscadoEm:''}
+    ];
+    var MSG_SUMIU = 'Esse item não está mais na lista (foi apagado ou passou dos 7 dias). A lista foi atualizada.';
+    function erroCod(m, c){ var e = new Error(m); e.codigo = c; throw e; }
+    function textoItem(t){ return limpa(t).replace(/^[=+@\s]+/,'').slice(0,200); }
+    function respostaLista(){ return JSON.parse(JSON.stringify({ lista: lista, hoje: diaAtras(0) })); }
     function erroPreco(m){ var e = new Error(m); e.codigo = 'PRECO'; throw e; }
     // Na demonstração o CPF/CNPJ completo fica só aqui dentro; a tela recebe mascarado, como no sistema real.
     var pessoas = [
@@ -1108,12 +1230,47 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         podeMudarPreco: true,
         lojaCompleta: true,
         pedeNome: false,
-        versao: 9, hoje: diaAtras(0), diasEdicao: 30, alteracoes: alteracoes,
-        loja: { vendas: vendas, pagamentos: pagamentos, itens: lojaItens.map(function(x){ return { nome:x.nome, precoCentavos:x.preco }; }), resumo: resumoLojaDemo() }
+        versao: 10, hoje: diaAtras(0), diasEdicao: 30, alteracoes: alteracoes,
+        loja: { vendas: vendas, pagamentos: pagamentos, itens: lojaItens.map(function(x){ return { nome:x.nome, precoCentavos:x.preco }; }), resumo: resumoLojaDemo() },
+        lista: lista, podeEscreverLista: true, quemEscreveLista: 'Cristiano'
       }));
     }
     return {
       getDadosIniciais: function(){ return pacote(); },
+      getLista: function(){ return respostaLista(); },
+      salvarLista: function(p){
+        p = p || {};
+        var modo = (p.modo==='editar' || p.modo==='remover') ? p.modo : 'novo';
+        if(modo==='novo'){
+          var dia = Number(p.dia);
+          if(!(dia>=1 && dia<=6 && Math.floor(dia)===dia)) falhar('Escolha o dia da lista (de segunda a sábado).');
+          var textos = (Array.isArray(p.textos) ? p.textos : [p.texto]).slice(0,100).map(textoItem).filter(function(t){ return t; });
+          if(!textos.length) falhar('Escreva o item.');
+          if(textos.length>30) falhar('Escreva até 30 itens de uma vez.');
+          var nomeDia = ['segunda','terça','quarta','quinta','sexta','sábado'][dia-1];
+          if(lista.filter(function(x){ return x.dia===dia; }).length + textos.length > 60) falhar('A lista de '+nomeDia+' ficaria com mais de 60 itens. Apague os que não precisa mais.');
+          var base = Date.now(), quando = agoraTexto();
+          textos.forEach(function(t, i){ lista.push({id:'T'+base+'-'+(i+1),dia:dia,texto:t,escritoEm:quando,escritoPor:USUARIO_TREINO,riscado:false,riscadoPor:'',riscadoEm:''}); });
+        } else {
+          var it = lista.filter(function(x){ return x.id===String(p.id); })[0];
+          if(!it) erroCod(MSG_SUMIU, 'SUMIU');
+          if(modo==='remover') lista.splice(lista.indexOf(it), 1);
+          else {
+            var tx = textoItem(p.texto);
+            if(!tx) falhar('Escreva o item (para tirar da lista, use Apagar).');
+            it.texto = tx;
+          }
+        }
+        return respostaLista();
+      },
+      riscarLista: function(p){
+        p = p || {};
+        var it = lista.filter(function(x){ return x.id===String(p.id); })[0];
+        if(!it) erroCod(MSG_SUMIU, 'SUMIU');
+        var r = p.riscado!==false;
+        if(r!==it.riscado){ it.riscado = r; it.riscadoPor = r ? USUARIO_TREINO : ''; it.riscadoEm = r ? agoraTexto() : ''; }
+        return respostaLista();
+      },
       salvarCliente: function(p){
         p = p || {};
         var modo = (p.modo==='editar' || p.modo==='completar') ? p.modo : 'novo';
@@ -1361,6 +1518,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     state.hojeServidor = /^\d{4}-\d{2}-\d{2}$/.test(String(resp.hoje||'')) ? resp.hoje : '';
     state.diasEdicao = Number(resp.diasEdicao) || 30;
     state.alteracoes = (resp.alteracoes && typeof resp.alteracoes==='object') ? resp.alteracoes : null;
+    // versão 10: a aba Lista só aparece quando o servidor já manda a lista
+    state.listaAtiva = Array.isArray(resp.lista);
+    state.listaSemana = state.listaAtiva ? resp.lista : null;
+    state.podeEscreverLista = !!resp.podeEscreverLista;
+    state.quemEscreveLista = String(resp.quemEscreveLista || '');
     state.assinatura = assinaturaDados(resp);
     atualizarUsuario();
   }
@@ -1433,7 +1595,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(state.pedeNome) atualizarListaOperadores();
   }
   function assinaturaDados(resp){
-    try { return JSON.stringify([resp.movs, resp.pessoas, resp.equipamentos, resp.resumo, resp.loja, resp.podeMudarPreco, resp.lojaCompleta, resp.pedeNome, resp.alteracoes, resp.versao, resp.hoje]); } catch(e){ return String(Date.now()); }
+    try { return JSON.stringify([resp.movs, resp.pessoas, resp.equipamentos, resp.resumo, resp.loja, resp.podeMudarPreco, resp.lojaCompleta, resp.pedeNome, resp.alteracoes, resp.versao, resp.hoje,
+      resp.lista, resp.podeEscreverLista, resp.quemEscreveLista]); } catch(e){ return String(Date.now()); }
   }
 
   function servidor(nomeFn, arg){
@@ -1502,6 +1665,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     state.devAberta = null; state.devMarcas = null; state.reqDev = null; state.erroCarga = null; state.usuario = '';
     state.loja = null; state.lojaAtiva = false; state.pagAberto = null; state.pagMarcas = null; state.reqPag = null; state.atalho = null;
     state.edicao = null; state.alteracoes = null;
+    limparEstadoLista(false);
     atualizarUsuario();
     render();
     mostrarLogin('Essa senha não vale mais (pode ter sido trocada). Digite a sua senha para continuar.');
@@ -1930,7 +2094,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   }
 
   // ================= LISTA =================
-  function render(){ renderAbas(); renderResumo(); renderFiltros(); renderLista(); renderLoja(); renderAtalhos(); }
+  function render(){ renderAbas(); renderResumo(); renderFiltros(); renderLista(); renderLoja(); renderAtalhos(); renderSemana(); }
 
   function renderFiltros(){
     document.querySelectorAll('#filtros button').forEach(function(b){
@@ -2070,12 +2234,15 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   function limparErroForm(){ document.getElementById('f-erro').classList.remove('on'); }
 
   var toastTimer = null;
-  function showToast(msg){
+  // ruim = aviso de que algo NÃO deu certo (ícone ×, fica mais tempo na tela)
+  function showToast(msg, ruim){
     var t=document.getElementById('toast');
     document.getElementById('toast-tx').textContent=msg;
+    t.querySelector('.ic').innerHTML = icon(ruim ? 'x' : 'check', 16);
+    t.classList.toggle('ruim', !!ruim);
     t.classList.add('on');
     clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){ t.classList.remove('on'); },2400);
+    toastTimer=setTimeout(function(){ t.classList.remove('on'); }, ruim ? 4500 : 2400);
   }
 
   async function onRegistrar(){
@@ -2343,12 +2510,22 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(acao==='equip-salvar'){ salvarEquip('editar'); return; }
     if(acao==='equip-tirar'){ salvarEquip('remover'); return; }
     if(acao==='item-tirar'){ tirarItem(); return; }
+    // versão 10: aba Lista
+    if(acao==='ls-riscar'){ lsRiscar(alvo.getAttribute('data-id')); return; }
+    if(acao==='ls-editar'){ lsAbrirEdicao(alvo.getAttribute('data-id')); return; }
+    if(acao==='ls-ed-cancelar'){ lsFecharEdicao(); return; }
+    if(acao==='ls-ed-salvar'){ lsSalvarEdicao(); return; }
+    if(acao==='ls-ed-apagar'){ lsApagar(); return; }
+    if(acao==='ls-add'){ lsAdicionar(Number(alvo.getAttribute('data-dia'))); return; }
+    if(acao==='ls-ir'){ lsIrPara(Number(alvo.getAttribute('data-dia'))); return; }
   });
 
   // máscaras enquanto digita: CPF 000.000.000-00 (ou CNPJ 00.000.000/0000-00) e telefone (62) 99999-9999
   document.addEventListener('input', function(ev){
     var t = ev.target;
     if(t && t.classList && t.classList.contains('st-in')){ digitouQtd(t); return; }
+    if(t && t.classList && t.classList.contains('ls-novo-tx')){ lsDigitouNovo(t); return; }
+    if(t && t.classList && t.classList.contains('ls-ed-tx')){ lsDigitouEdicao(t); return; }
     if(!t || !t.id) return;
     if(t.id==='cli-cpf'){ t.value = mascaraDoc(t.value); atualizarDicaCpf(); }
     else if(t.id==='cli-tel'){ t.value = mascaraTel(t.value); var d = soDigitos(t.value); t.classList.toggle('ok', d.length===10 || d.length===11); }
@@ -2361,6 +2538,19 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       var caixaOp = t.closest('.dev-painel, .pag-painel, .ed-painel, .card-form');
       var assinaOp = caixaOp ? caixaOp.querySelector('.assina') : null;
       if(assinaOp) assinaOp.innerHTML = conteudoAssinatura(normOperador(t.value));
+    }
+  });
+  // Lista: no item sendo alterado, Enter salva e Esc cancela; no campo de itens novos, Enter é linha nova
+  // (um item por linha) e Ctrl+Enter adiciona
+  document.addEventListener('keydown', function(ev){
+    var t = ev.target;
+    if(!t || !t.classList || ev.isComposing) return;
+    var enter = (ev.key==='Enter' || ev.keyCode===13);
+    if(t.classList.contains('ls-ed-tx')){
+      if(enter && !ev.shiftKey){ ev.preventDefault(); lsSalvarEdicao(); }
+      else if(ev.key==='Escape'){ ev.preventDefault(); lsFecharEdicao(); }
+    } else if(t.classList.contains('ls-novo-tx') && enter && (ev.ctrlKey || ev.metaKey)){
+      ev.preventDefault(); lsAdicionar(Number(t.getAttribute('data-dia')));
     }
   });
   document.addEventListener('keydown', function(ev){
@@ -2437,6 +2627,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     document.getElementById('op-loc-in').value = ''; document.getElementById('op-loja-in').value = '';
     state.lojaCompleta = false; state.pedeNome = false;
     state.edicao = null; state.alteracoes = null; state.versao = 0; state.hojeServidor = '';
+    limparEstadoLista(true);
     resetPessoa(); resetItens(); limparErroForm();
     document.getElementById('f-obs').value = '';
     state.reqLocacao = novoIdReq();
@@ -2500,21 +2691,35 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 
   // ---- abas ----
   function trocarAba(aba){
-    state.aba = (aba==='loja') ? 'loja' : 'locacao';
+    state.aba = (aba==='loja' || aba==='lista') ? aba : 'locacao';
     try { localStorage.setItem('sof_aba', state.aba); } catch(e){}
     renderAbas();
+    if(state.aba==='lista') atualizarLista();   // pega o que os outros riscaram ou o Cristiano escreveu
+  }
+  // a aba que aparece: Loja e Lista só existem quando o servidor já é a versão com elas
+  function abaVisivel(){
+    if(state.aba==='loja' && state.lojaAtiva) return 'loja';
+    if(state.aba==='lista' && state.listaAtiva) return 'lista';
+    return 'locacao';
   }
   function renderAbas(){
     var nav = document.getElementById('abas');
-    var aba = state.lojaAtiva ? state.aba : 'locacao';
-    nav.hidden = !state.lojaAtiva;
+    var aba = abaVisivel();
+    nav.hidden = !(state.lojaAtiva || state.listaAtiva);
     document.getElementById('view-locacao').hidden = (aba!=='locacao');
     document.getElementById('view-loja').hidden = (aba!=='loja');
+    var vLista = document.getElementById('view-lista'), abriuLista = vLista.hidden && aba==='lista';
+    vLista.hidden = (aba!=='lista');
+    document.getElementById('nota-lista').hidden = !state.listaAtiva;
     nav.querySelectorAll('[data-aba]').forEach(function(b){
-      var on = b.getAttribute('data-aba')===aba;
+      var qual = b.getAttribute('data-aba');
+      if(qual==='loja') b.hidden = !state.lojaAtiva;
+      if(qual==='lista') b.hidden = !state.listaAtiva;
+      var on = qual===aba;
       b.classList.toggle('on', on);
       b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
+    if(abriuLista) lsCrescerTodos();   // campos escondidos não sabem a própria altura: acerta ao aparecer
   }
 
   // ---- formulário de venda ----
@@ -3248,6 +3453,386 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     finally{ ocupado--; bt.disabled = false; bt.classList.remove('confirmar'); bt.textContent = (modo==='remover') ? 'Tirar da lista' : 'Salvar nome'; c.confirmar = false; }
   }
 
+  // ================= VERSÃO 10: LISTA DA SEMANA =================
+  // Bloco de notas de segunda a sábado (domingo não entra). Quem o servidor deixar (o Cristiano)
+  // escreve, altera e apaga; todo mundo lê e risca na bolinha. Riscado não some: fica riscado.
+  // Cada item some sozinho 7 dias depois de escrito — quem apaga é o servidor, não a tela.
+  var DIAS_SEMANA = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  var DIAS_CURTOS = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var LIMITE_ITEM = 200, LIMITE_DE_UMA_VEZ = 30;
+  var CHAVE_RASCUNHO = MODO_TREINO ? 'sof_lista_rascunho_treino' : 'sof_lista_rascunho';
+  var lsFila = {};          // riscos sendo enviados agora (um pedido por item de cada vez, na ordem dos toques)
+  var lsCache = {};         // o que cada bloco está mostrando: só redesenha o bloco que mudou
+  var lsTimerApagar = null;
+  var atualizandoLista = false;
+
+  function temPend(id){ return Object.prototype.hasOwnProperty.call(state.lsPend, id); }
+  function naDia(d){ return (d===6 ? 'no ' : 'na ') + DIAS_SEMANA[d-1].toLowerCase(); }
+  function itensDoDia(d){ return (state.listaSemana || []).filter(function(it){ return it && Number(it.dia)===d && String(it.texto==null?'':it.texto).trim(); }); }
+  function acharItemLista(id){ id = String(id==null?'':id); return (state.listaSemana || []).filter(function(it){ return it && String(it.id)===id; })[0] || null; }
+  function riscadoNaTela(it){ var id = String(it.id); return temPend(id) ? !!state.lsPend[id] : !!it.riscado; }
+  // um item por linha; tira marcadores do começo ("- ", "• ") e espaços repetidos
+  function linhasDaLista(v){
+    return String(v==null?'':v).split(/\r?\n/).map(function(l){
+      return l.replace(/\s+/g,' ').trim().replace(/^[-–—•*·▪●◦>]+\s*/,'').replace(/^[=+@]+\s*/,'').trim();
+    }).filter(function(l){ return l; });
+  }
+  function textoBotaoAdd(v){ var k = linhasDaLista(v).length; return icon('plus',16)+(k>1 ? 'Adicionar '+k+' itens' : 'Adicionar'); }
+  function isoMenosUm(iso){
+    var p = String(iso).split('-'), d = new Date(Number(p[0]), Number(p[1])-1, Number(p[2])-1);
+    return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+  }
+  // "06/11/2026 18:21" → "hoje às 18:21", "ontem às 18:21" ou "em 04/11 às 18:21"
+  function quandoLista(t){
+    var m = /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/.exec(String(t==null?'':t).trim());
+    if(!m) return '';
+    var iso = m[3]+'-'+m[2]+'-'+m[1], hj = state.hojeServidor || hoje();
+    var dia = (iso===hj) ? 'hoje' : (iso===isoMenosUm(hj) ? 'ontem' : 'em '+m[1]+'/'+m[2]);
+    return dia + (m[4] ? ' às '+m[4]+':'+m[5] : '');
+  }
+  // 1 = segunda … 6 = sábado; 0 = domingo (pelo dia do servidor, no horário de Brasília)
+  function diaDaSemanaHoje(){
+    var p = String(state.hojeServidor || hoje()).split('-');
+    return new Date(Number(p[0]), Number(p[1])-1, Number(p[2])).getDay();
+  }
+
+  // só a lista (respostas das ações da Lista); quem pode escrever vem com os dados completos
+  function aplicarLista(resp){
+    if(!resp || !Array.isArray(resp.lista) || !senhaAtual) return;
+    state.listaSemana = resp.lista;
+    state.listaAtiva = true;
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(resp.hoje||''))) state.hojeServidor = resp.hoje;
+  }
+  function limparEstadoLista(tudo){
+    state.listaAtiva = false; state.listaSemana = null; state.podeEscreverLista = false; state.quemEscreveLista = '';
+    state.lsEdicao = null; state.lsReq = {}; state.lsErro = {}; state.lsSalvando = {}; state.lsPend = {};
+    if(tudo){ state.lsRascunho = {}; try { localStorage.removeItem(CHAVE_RASCUNHO); } catch(e){} }
+  }
+  // o que o Cristiano escreveu e ainda não adicionou fica guardado no aparelho (se o app fechar, não perde)
+  function lsGuardarRascunhos(){
+    try {
+      var r = {}, tem = false;
+      for(var d=1; d<=6; d++){ var v = String(state.lsRascunho[d] || ''); if(v.trim()){ r[d] = v.slice(0,6000); tem = true; } }
+      if(tem) localStorage.setItem(CHAVE_RASCUNHO, JSON.stringify(r)); else localStorage.removeItem(CHAVE_RASCUNHO);
+    } catch(e){}
+  }
+  function lsLerRascunhos(){
+    try {
+      var r = JSON.parse(localStorage.getItem(CHAVE_RASCUNHO) || '{}');
+      for(var d=1; d<=6; d++) if(r && typeof r[d]==='string') state.lsRascunho[d] = r[d];
+    } catch(e){}
+  }
+  // alguém escrevendo ou alterando um item: a atualização automática espera
+  function listaOcupada(){
+    if(state.lsEdicao) return true;
+    var a = document.activeElement;
+    return !!(a && a.classList && (a.classList.contains('ls-novo-tx') || a.classList.contains('ls-ed-tx')));
+  }
+
+  // ---- desenho ----
+  function htmlItemLista(it, pode){
+    var id = String(it.id), idH = esc(id);
+    if(pode && state.lsEdicao && state.lsEdicao.id===id) return htmlEdicaoLista();
+    var risc = riscadoNaTela(it), esperando = temPend(id), meta;
+    if(risc) meta = (!esperando && it.riscado && it.riscadoPor) ? 'Riscado por '+it.riscadoPor+(quandoLista(it.riscadoEm) ? ' '+quandoLista(it.riscadoEm) : '') : 'Riscado';
+    else meta = quandoLista(it.escritoEm) ? 'Escrito '+quandoLista(it.escritoEm) : '';
+    return '<li class="ls-item'+(risc ? ' riscado' : '')+(esperando ? ' espera' : '')+'">'
+      + '<button type="button" class="ls-marcar" data-acao="ls-riscar" data-id="'+idH+'" role="checkbox" aria-checked="'+(risc ? 'true' : 'false')+'">'
+      + '<span class="ls-bola">'+icon('check',16)+'</span>'
+      + '<span class="ls-tx"><span class="ls-texto">'+esc(it.texto)+'</span>'+(meta ? '<span class="ls-meta">'+esc(meta)+'</span>' : '')+'</span></button>'
+      + (pode ? '<button type="button" class="ls-lapis" data-acao="ls-editar" data-id="'+idH+'" aria-label="'+esc('Alterar ou apagar: '+it.texto)+'" title="Alterar ou apagar">'+icon('lapis',17)+'</button>' : '')
+      + '</li>';
+  }
+  function htmlEdicaoLista(){
+    var ed = state.lsEdicao, ocup = !!ed.salvando;
+    return '<li class="ls-item ls-editando"><div class="ls-ed">'
+      + '<span class="rot">Alterar item</span>'
+      + '<textarea class="input ls-ed-tx" rows="1" maxlength="'+LIMITE_ITEM+'" autocapitalize="sentences" enterkeyhint="done" aria-label="Texto do item"'+(ocup ? ' readonly' : '')+'></textarea>'
+      + '<p class="erro'+(ed.erro ? ' on' : '')+'" role="alert">'+esc(ed.erro || '')+'</p>'
+      + '<div class="ls-ed-acoes">'
+      + '<button type="button" class="bt-fantasma" data-acao="ls-ed-cancelar"'+(ocup ? ' disabled' : '')+'>Cancelar</button>'
+      + '<button type="button" class="bt bt-lista" data-acao="ls-ed-salvar"'+(ocup ? ' disabled' : '')+'>'+(ed.salvando==='salvar' ? 'Salvando…' : icon('check',16)+'Salvar')+'</button>'
+      + '</div>'
+      + '<button type="button" class="bt-tirar'+(ed.confirmar ? ' confirmar' : '')+'" data-acao="ls-ed-apagar"'+(ocup ? ' disabled' : '')+'>'
+      + (ed.salvando==='apagar' ? 'Apagando…' : (ed.confirmar ? 'Toque de novo para apagar' : 'Apagar este item'))+'</button>'
+      + '</div></li>';
+  }
+  // um bloco (dia): { classe, html }
+  function blocoLista(d, pode, hojeN){
+    var nome = DIAS_SEMANA[d-1], itens = itensDoDia(d), n = itens.length;
+    var r = itens.filter(riscadoNaTela).length;
+    var conta = !n ? '' : (r===n ? '<span class="ls-conta ok">'+icon('check',13)+'Tudo riscado</span>'
+      : '<span class="ls-conta'+(r ? ' pend' : '')+'">'+(r ? r+' de '+n+' riscados' : (n===1 ? '1 item' : n+' itens'))+'</span>');
+    var html = '<div class="ls-dia-topo"><h3>'+nome+(d===hojeN ? '<span class="ls-hoje">Hoje</span>' : '')+'</h3>'+conta+'</div>';
+    if(n) html += '<ul class="ls-itens">'+itens.map(function(it){ return htmlItemLista(it, pode); }).join('')+'</ul>';
+    else if(!pode) html += '<p class="ls-vazio">Nada anotado para '+nome.toLowerCase()+'.</p>';
+    if(pode){
+      var rasc = String(state.lsRascunho[d] || ''), salv = !!state.lsSalvando[d], err = state.lsErro[d] || '';
+      html += '<div class="ls-novo">'
+        + '<textarea class="input ls-novo-tx" data-dia="'+d+'" rows="1" maxlength="6000" autocapitalize="sentences" placeholder="Escrever na lista de '+nome.toLowerCase()+'…" aria-label="Novos itens para '+nome.toLowerCase()+', um por linha"'+(salv ? ' readonly' : '')+'></textarea>'
+        + '<p class="erro'+(err ? ' on' : '')+'" role="alert">'+esc(err)+'</p>'
+        + '<button type="button" class="bt bt-lista ls-add" data-acao="ls-add" data-dia="'+d+'"'+((rasc.trim() || salv) ? '' : ' hidden')+(salv ? ' disabled' : '')+'>'
+        + (salv ? 'Salvando…' : textoBotaoAdd(rasc))+'</button>'
+        + '</div>';
+    }
+    return { classe: 'card ls-dia'+(d===hojeN ? ' hoje' : '')+(n ? (r===n ? ' feito' : ' tem') : ''), html: html };
+  }
+  function chipsLista(hojeN){
+    var out = '';
+    for(var d=1; d<=6; d++){
+      var itens = itensDoDia(d), n = itens.length, pend = n - itens.filter(riscadoNaTela).length;
+      var rot = DIAS_SEMANA[d-1]+(d===hojeN ? ' (hoje)' : '')+': '+(!n ? 'nada anotado' : (pend ? (pend===1 ? 'falta 1 item' : 'faltam '+pend+' itens') : 'tudo riscado'));
+      out += '<button type="button" class="ls-chip'+(d===hojeN ? ' hoje' : '')+(n ? (pend ? ' pend' : ' ok') : '')+'" data-acao="ls-ir" data-dia="'+d+'" aria-label="'+esc(rot)+'" title="'+esc(rot)+'">'
+        + DIAS_CURTOS[d-1]+'<small aria-hidden="true">'+(!n ? '–' : (pend ? pend : icon('check',13)))+'</small></button>';
+    }
+    return out;
+  }
+  function renderSemana(){
+    var blocos = document.getElementById('ls-blocos'), chips = document.getElementById('ls-dias'), sub = document.getElementById('ls-sub');
+    var modo = !state.listaAtiva ? 'nada' : (state.carregando ? 'carregando' : (state.erroCarga ? 'erro:'+state.erroCarga : 'ok'));
+    if(modo!=='ok'){
+      if(lsCache.modo!==modo){
+        blocos.innerHTML = (modo==='carregando') ? '<div class="esq"></div><div class="esq" style="opacity:.6"></div>'
+          : (modo==='nada' ? '' : '<div class="vazio"><div class="circ">'+icon('semrede',24)+'</div><h4>Não consegui carregar os dados</h4><p>'+esc(state.erroCarga)+'</p>'
+            + '<button type="button" class="bt bt-mini bt-tentar" data-acao="recarregar">'+icon('atualizar',14)+'Tentar de novo</button></div>');
+        chips.innerHTML = ''; sub.textContent = '';
+        lsCache = { modo: modo };
+      }
+      return;
+    }
+    if(lsCache.modo!=='ok'){
+      blocos.innerHTML = DIAS_SEMANA.map(function(nome, i){ return '<section class="card ls-dia" id="ls-dia-'+(i+1)+'" data-dia="'+(i+1)+'" aria-label="'+nome+'"></section>'; }).join('');
+      lsCache = { modo: 'ok' };
+    }
+    var pode = !!state.podeEscreverLista;
+    if(state.lsEdicao && (!pode || !acharItemLista(state.lsEdicao.id))) state.lsEdicao = null;
+    var hojeN = diaDaSemanaHoje();
+    var subTx = pode
+      ? 'Escreva o que precisa ser separado, um item por linha. Cada item some sozinho 7 dias depois de escrito.'
+      : 'Toque na bolinha quando separar o item: ele fica riscado. Só '+(state.quemEscreveLista || 'Cristiano')+' escreve e altera a lista. Cada item some sozinho 7 dias depois de escrito.';
+    if(sub.textContent!==subTx) sub.textContent = subTx;
+    var ch = chipsLista(hojeN);
+    if(lsCache.chips!==ch){ chips.innerHTML = ch; lsCache.chips = ch; }
+    for(var d=1; d<=6; d++){
+      var el = document.getElementById('ls-dia-'+d);
+      var b = blocoLista(d, pode, hojeN), chave = b.classe+'|'+b.html;
+      if(lsCache[d]!==chave){
+        var foco = lsGuardarFoco(el);
+        el.className = b.classe; el.innerHTML = b.html; lsCache[d] = chave;
+        lsSincronizar(el);
+        lsVoltarFoco(el, foco);
+      } else lsSincronizar(el);
+    }
+  }
+  // os textos dos campos vêm do estado (nunca do HTML): nada do que está sendo escrito se perde ao redesenhar
+  function lsSincronizar(el){
+    el.querySelectorAll('.ls-novo-tx').forEach(function(t){
+      var v = String(state.lsRascunho[Number(t.getAttribute('data-dia'))] || '');
+      if(t.value!==v) t.value = v;
+      lsCrescer(t);
+    });
+    el.querySelectorAll('.ls-ed-tx').forEach(function(t){
+      var v = state.lsEdicao ? String(state.lsEdicao.texto) : '';
+      if(t.value!==v) t.value = v;
+      lsCrescer(t);
+    });
+  }
+  // o campo cresce junto com o texto (até um limite; depois rola)
+  function lsCrescer(t){
+    if(!t.offsetParent) return;   // escondido (outra aba): acerta quando a aba Lista aparecer
+    t.style.height = 'auto';
+    var h = t.scrollHeight + 3;
+    t.style.height = Math.min(h, 320)+'px';
+    t.style.overflowY = (h>320) ? 'auto' : 'hidden';
+  }
+  function lsCrescerTodos(){ document.querySelectorAll('#ls-blocos .ls-novo-tx, #ls-blocos .ls-ed-tx').forEach(lsCrescer); }
+  function lsGuardarFoco(el){
+    var a = document.activeElement;
+    if(!a || a===document.body || !el.contains(a)) return null;
+    var f = { cls: a.classList.contains('ls-novo-tx') ? 'ls-novo-tx' : (a.classList.contains('ls-ed-tx') ? 'ls-ed-tx' : ''),
+      acao: a.getAttribute('data-acao'), id: a.getAttribute('data-id'), ini: null, fim: null };
+    if(f.cls){ try { f.ini = a.selectionStart; f.fim = a.selectionEnd; } catch(e){} }
+    return f;
+  }
+  function lsVoltarFoco(el, f){
+    if(!f) return;
+    var alvo = f.cls ? el.querySelector('.'+f.cls)
+      : (f.acao ? Array.prototype.filter.call(el.querySelectorAll('[data-acao="'+f.acao+'"]'), function(b){ return b.getAttribute('data-id')===f.id; })[0] : null);
+    if(!alvo || alvo.hidden || alvo.disabled) return;
+    try { alvo.focus({ preventScroll: true }); if(f.cls && f.ini!=null) alvo.setSelectionRange(f.ini, f.fim); } catch(e){}
+  }
+  function lsFocarNovo(d){ var t = document.querySelector('#ls-dia-'+d+' .ls-novo-tx'); if(t){ try { t.focus(); } catch(e){} } }
+  function lsFocarEdicao(){ var t = document.querySelector('#ls-blocos .ls-ed-tx'); if(t){ try { t.focus(); var n = t.value.length; t.setSelectionRange(n, n); } catch(e){} } }
+  function lsFocarLapis(id){
+    var b = Array.prototype.filter.call(document.querySelectorAll('#ls-blocos .ls-lapis'), function(x){ return x.getAttribute('data-id')===String(id); })[0];
+    if(b){ try { b.focus({ preventScroll: true }); } catch(e){} }
+  }
+  // depois de mexer direto num campo, o bloco já está certo na tela: anota para não redesenhar à toa
+  function lsAtualizarCache(d){
+    if(lsCache.modo!=='ok' || !(d>=1 && d<=6)) return;
+    var b = blocoLista(d, !!state.podeEscreverLista, diaDaSemanaHoje());
+    lsCache[d] = b.classe+'|'+b.html;
+  }
+  function lsDigitouNovo(t){
+    var d = Number(t.getAttribute('data-dia'));
+    if(!(d>=1 && d<=6)) return;
+    state.lsRascunho[d] = t.value;
+    lsGuardarRascunhos();
+    lsCrescer(t);
+    var caixa = t.parentNode, bt = caixa.querySelector('.ls-add'), err = caixa.querySelector('.erro');
+    if(state.lsErro[d]){ state.lsErro[d] = ''; if(err){ err.textContent = ''; err.classList.remove('on'); } }
+    if(bt && !state.lsSalvando[d]){ bt.hidden = !t.value.trim(); bt.innerHTML = textoBotaoAdd(t.value); }
+    lsAtualizarCache(d);
+  }
+  function lsDigitouEdicao(t){
+    var ed = state.lsEdicao; if(!ed) return;
+    ed.texto = t.value;
+    if(ed.erro){ ed.erro = ''; var err = t.parentNode.querySelector('.erro'); if(err){ err.textContent = ''; err.classList.remove('on'); } }
+    lsCrescer(t);
+    var it = acharItemLista(ed.id); if(it) lsAtualizarCache(Number(it.dia));
+  }
+
+  // ---- riscar (todo mundo) ----
+  // A bolinha muda na hora; o servidor confirma depois. Se tocar de novo enquanto envia, vale o último toque.
+  function lsRiscar(id){
+    var it = acharItemLista(id); if(!it) return;
+    id = String(it.id);
+    state.lsPend[id] = !riscadoNaTela(it);
+    renderSemana();
+    lsEnviarRisco(id);
+  }
+  async function lsEnviarRisco(id){
+    if(lsFila[id] || !temPend(id)) return;
+    var quer = !!state.lsPend[id], erro = null;
+    lsFila[id] = true; ocupado++;
+    try {
+      var resp = await servidor('riscarLista', { id:id, riscado:quer, idReq:novoIdReq() });
+      aplicarLista(resp);
+      if(state.lsPend[id]===quer) delete state.lsPend[id];
+    } catch(e){ erro = e || new Error(''); delete state.lsPend[id]; }
+    finally { lsFila[id] = false; ocupado--; }
+    if(erro){
+      if(erro.codigo!=='SENHA'){
+        showToast((erro.codigo==='REDE' || erro.codigo==='TEMPO')
+          ? 'Sem conexão: '+(quer ? 'o item não foi riscado' : 'o risco não foi tirado')+'. Confira a internet e toque de novo.'
+          : msgErro(erro), true);
+        if(erro.codigo==='SUMIU') atualizarLista(true);
+      }
+    } else if(temPend(id)) lsEnviarRisco(id);   // tocou de novo enquanto enviava: manda o último toque
+    renderSemana();
+  }
+
+  // ---- escrever, alterar e apagar (só o Cristiano; o servidor confere) ----
+  async function lsAdicionar(d){
+    if(!(d>=1 && d<=6) || state.lsSalvando[d] || !state.podeEscreverLista) return;
+    var textos = linhasDaLista(state.lsRascunho[d]);
+    function falhar(m){ state.lsErro[d] = m; renderSemana(); lsFocarNovo(d); }
+    if(!textos.length) return falhar('Escreva o item antes de adicionar.');
+    if(textos.length>LIMITE_DE_UMA_VEZ) return falhar('Dá para adicionar até '+LIMITE_DE_UMA_VEZ+' itens de uma vez (um por linha). Adicione em duas partes.');
+    var longo = textos.filter(function(x){ return x.length>LIMITE_ITEM; })[0];
+    if(longo) return falhar('Cada item pode ter até '+LIMITE_ITEM+' letras. Quebre este em mais linhas: "'+longo.slice(0,40)+'…"');
+    // o código do pedido vai junto com o texto: tocar de novo com o MESMO texto (a internet caiu) nunca duplica;
+    // texto diferente é outro pedido (nunca some sem gravar por ter sido confundido com o anterior)
+    var chaveTexto = textos.join('\n');
+    if(!state.lsReq[d] || state.lsReq[d].texto!==chaveTexto) state.lsReq[d] = { id: novoIdReq(), texto: chaveTexto };
+    state.lsSalvando[d] = true; state.lsErro[d] = '';
+    renderSemana();
+    ocupado++;
+    try {
+      var resp = await servidor('salvarLista', { modo:'novo', dia:d, textos:textos, idReq:state.lsReq[d].id });
+      aplicarLista(resp);
+      state.lsRascunho[d] = ''; state.lsReq[d] = null; lsGuardarRascunhos();
+      showToast(resp && resp.repetido ? 'Esses itens já tinham sido adicionados — confira na lista'
+        : (textos.length===1 ? 'Item adicionado '+naDia(d) : textos.length+' itens adicionados '+naDia(d)));
+    } catch(e){
+      if(e.codigo==='PERMISSAO'){ state.podeEscreverLista = false; showToast(msgErro(e), true); }
+      else if(e.codigo!=='SENHA') state.lsErro[d] = comDica(e);
+    } finally { state.lsSalvando[d] = false; ocupado--; }
+    renderSemana();
+  }
+  function lsAbrirEdicao(id){
+    var it = acharItemLista(id);
+    if(!it || !state.podeEscreverLista || (state.lsEdicao && state.lsEdicao.salvando)) return;
+    state.lsEdicao = { id:String(it.id), original:String(it.texto), texto:String(it.texto), erro:'', confirmar:false, salvando:'', idReq:null, idReqApagar:novoIdReq() };
+    renderSemana();
+    lsFocarEdicao();
+  }
+  function lsFecharEdicao(){
+    var ed = state.lsEdicao; if(!ed || ed.salvando) return;
+    state.lsEdicao = null;
+    renderSemana();
+    lsFocarLapis(ed.id);
+  }
+  async function lsSalvarEdicao(){
+    var ed = state.lsEdicao;
+    if(!ed || ed.salvando) return;
+    var t = String(ed.texto==null?'':ed.texto).replace(/\s+/g,' ').trim().replace(/^[=+@]+\s*/,'').trim();
+    if(!t){ ed.erro = 'Escreva o item. Para tirar da lista, toque em "Apagar este item".'; renderSemana(); lsFocarEdicao(); return; }
+    if(t===String(ed.original).trim()){ lsFecharEdicao(); return; }
+    if(!ed.idReq || ed.idReqTexto!==t){ ed.idReq = novoIdReq(); ed.idReqTexto = t; }
+    ed.salvando = 'salvar'; ed.erro = ''; ed.confirmar = false;
+    renderSemana();
+    ocupado++;
+    var fechou = false;
+    try {
+      var resp = await servidor('salvarLista', { modo:'editar', id:ed.id, texto:t, idReq:ed.idReq });
+      aplicarLista(resp);
+      if(state.lsEdicao===ed){ state.lsEdicao = null; fechou = true; }
+      showToast('Item alterado');
+    } catch(e){
+      if(e.codigo==='SUMIU'){ if(state.lsEdicao===ed) state.lsEdicao = null; showToast(msgErro(e), true); atualizarLista(true); }
+      else if(e.codigo==='PERMISSAO'){ if(state.lsEdicao===ed) state.lsEdicao = null; state.podeEscreverLista = false; showToast(msgErro(e), true); }
+      else if(e.codigo!=='SENHA') ed.erro = comDica(e);
+    } finally { ed.salvando = ''; ocupado--; }
+    renderSemana();
+    if(fechou) lsFocarLapis(ed.id);
+  }
+  async function lsApagar(){
+    var ed = state.lsEdicao;
+    if(!ed || ed.salvando) return;
+    if(!ed.confirmar){   // dois toques: o primeiro só pede confirmação
+      ed.confirmar = true;
+      renderSemana();
+      clearTimeout(lsTimerApagar);
+      lsTimerApagar = setTimeout(function(){ if(state.lsEdicao===ed && ed.confirmar && !ed.salvando){ ed.confirmar = false; renderSemana(); } }, 5000);
+      return;
+    }
+    clearTimeout(lsTimerApagar);
+    ed.salvando = 'apagar'; ed.erro = '';
+    renderSemana();
+    ocupado++;
+    try {
+      var resp = await servidor('salvarLista', { modo:'remover', id:ed.id, idReq:ed.idReqApagar });
+      aplicarLista(resp);
+      if(state.lsEdicao===ed) state.lsEdicao = null;
+      showToast('Item apagado');
+    } catch(e){
+      if(e.codigo==='SUMIU'){ if(state.lsEdicao===ed) state.lsEdicao = null; showToast('Esse item já tinha saído da lista.'); atualizarLista(true); }
+      else if(e.codigo==='PERMISSAO'){ if(state.lsEdicao===ed) state.lsEdicao = null; state.podeEscreverLista = false; showToast(msgErro(e), true); }
+      else if(e.codigo!=='SENHA'){ ed.erro = comDica(e); ed.confirmar = false; }
+    } finally { ed.salvando = ''; ocupado--; }
+    renderSemana();
+  }
+  function lsIrPara(d){
+    var el = document.getElementById('ls-dia-'+d); if(!el) return;
+    var suave = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    try { el.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' }); } catch(e){ el.scrollIntoView(); }
+  }
+  // atualização só da Lista (rápida): ao abrir a aba e a cada 45 s com ela aberta
+  function podeAtualizarLista(){
+    return !MODO_TREINO && !!senhaAtual && !ocupado && !state.carregando && !listaOcupada() && !loginVisivel();
+  }
+  function atualizarLista(forcar){
+    if(atualizandoLista || !state.listaAtiva || !senhaAtual) return;
+    if(!forcar && !podeAtualizarLista()) return;
+    atualizandoLista = true;
+    servidor('getLista').then(function(resp){
+      if(!forcar && !podeAtualizarLista()) return;
+      aplicarLista(resp);
+      renderSemana();
+    }).catch(function(){}).then(function(){ atualizandoLista = false; });
+  }
+
   // ================= CARREGAR E MANTER ATUALIZADO =================
   function carregar(){
     state.carregando = true; state.erroCarga = null; render();
@@ -3266,7 +3851,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   // atualiza sozinho a cada 2 minutos e ao voltar para o app — mas nunca no meio de algo que a pessoa está fazendo
   function podeAtualizar(){
     return !MODO_TREINO && !!senhaAtual && !ocupado && !state.carregando && state.devAberta===null && state.pagAberto===null && state.edicao===null
-      && !loginVisivel() && !document.getElementById('picker').classList.contains('on');
+      && !listaOcupada() && !loginVisivel() && !document.getElementById('picker').classList.contains('on');
   }
   var atualizando = false;
   function atualizarSilencioso(){
@@ -3295,9 +3880,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   montarResumoLoja();
   resetVenda();
   state.reqVenda = novoIdReq();
-  try { if(localStorage.getItem('sof_aba')==='loja') state.aba = 'loja'; } catch(e){}
+  try { var abaSalva = localStorage.getItem('sof_aba'); if(abaSalva==='loja' || abaSalva==='lista') state.aba = abaSalva; } catch(e){}
+  lsLerRascunhos();
   document.getElementById('login-form').addEventListener('submit', entrar);
   setInterval(function(){ if(document.visibilityState==='visible') atualizarSilencioso(); }, 120000);
+  setInterval(function(){ if(document.visibilityState==='visible' && abaVisivel()==='lista') atualizarLista(); }, 45000);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') atualizarSilencioso(); });
   window.addEventListener('online', function(){ atualizarFaixa(); atualizarSilencioso(); });
   window.addEventListener('offline', atualizarFaixa);
