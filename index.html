@@ -251,6 +251,19 @@ textarea.input{resize:none}
 .letras button:hover{background:#DDEBF6}
 .letras button.on{background:linear-gradient(135deg,var(--azul-claro),var(--azul-escuro));color:#fff;box-shadow:0 6px 14px -6px rgba(13,127,197,.6)}
 .letras .l-todos{grid-column:span 3}
+.letras[hidden]{display:none}
+/* versão 11: busca com lupa no painel A–Z */
+.p-busca{position:relative;margin:0 0 10px}
+.p-busca > .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx-3);display:flex;pointer-events:none}
+.p-busca input{padding-left:40px;padding-right:46px;border-radius:999px;min-height:46px;font-size:16px;-webkit-appearance:none;appearance:none}
+.p-busca input::-webkit-search-cancel-button,.p-busca input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.p-busca-x{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--tx-2)}
+.p-busca-x:hover{background:#EEF4F9;color:var(--tx-1)}
+.p-busca-x[hidden]{display:none}
+.p-achados{padding:7px 12px;font-size:11.5px;font-weight:700;color:var(--tx-2);background:#F5F9FC;border-bottom:1px solid #EDF3F8}
+.cli-hint.troca{color:var(--azul-escuro);font-weight:600}
+.p-vazio.p-vazio-busca{color:var(--tx-2);line-height:1.5}
+.p-vazio-busca b{color:var(--tx-1)}
 .letras span{color:#C3D4E2;background:#F5F9FC;user-select:none}
 .p-lista{margin-top:12px;flex:1;min-height:0;overflow-y:auto;border:1px solid var(--linha);border-radius:14px}
 .p-lista::-webkit-scrollbar{width:8px}
@@ -510,6 +523,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 @media(max-width:439px){.abas{gap:4px;padding:5px}.abas button{gap:6px;padding:10px 6px;font-size:14.5px}}
 @media(max-width:359px){.abas button{font-size:13.5px}.abas button > span[data-ic]{display:none}}
 .toast.ruim .ic{color:#FF9A8F}
+.toast{width:max-content}
 .ls-topo{padding:16px;margin:0 0 14px}
 .ls-cab{display:flex;align-items:flex-start;gap:12px}
 .ls-cab .h-ic{flex:none}
@@ -681,6 +695,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 [data-tema="escuro"] .letras button:hover{background:#1E3650}
 [data-tema="escuro"] .letras button.on{background:linear-gradient(135deg,#4FB3EE,#085A8E)}
 [data-tema="escuro"] .letras span{color:#3E5770;background:#0C1926}
+[data-tema="escuro"] .p-busca-x:hover{background:#1A2E44}
+[data-tema="escuro"] .p-achados{background:#0C1926;border-bottom-color:#1A2C3F}
 [data-tema="escuro"] .p-lista::-webkit-scrollbar-thumb{background:#2B4660}
 [data-tema="escuro"] .pk-row,[data-tema="escuro"] .pk-item{border-bottom-color:#1A2C3F}
 [data-tema="escuro"] .pk-edit{border-left-color:#1A2C3F}
@@ -918,6 +934,11 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 
       <!-- lista A–Z -->
       <div id="p-view-lista" class="p-view on">
+        <div class="p-busca" role="search">
+          <span class="ic" data-ic="lupa"></span>
+          <input id="picker-busca" class="input" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" placeholder="Buscar pelo nome…" aria-label="Buscar pelo nome">
+          <button type="button" class="p-busca-x" id="picker-busca-x" data-acao="picker-busca-limpar" aria-label="Limpar a busca" hidden><span data-ic="x" data-tam="16"></span></button>
+        </div>
         <div id="picker-letras" class="letras"></div>
         <div id="picker-lista" class="p-lista"></div>
         <div class="p-novo" id="p-novo-equip">
@@ -944,7 +965,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
           <p class="cli-sub" id="cli-sub"></p>
           <div>
             <label class="rot" for="cli-nome">Nome do cliente ou empresa</label>
-            <input id="cli-nome" class="input" autocomplete="off" autocapitalize="words" placeholder="Ex.: Maria Souza ou Eventos XYZ">
+            <input id="cli-nome" class="input" autocomplete="off" autocapitalize="words" maxlength="120" placeholder="Ex.: Maria Souza ou Eventos XYZ">
+            <p class="cli-hint" id="nome-hint"></p>
           </div>
           <div>
             <label class="rot" for="cli-cpf"><span id="doc-rotulo">CPF do responsável</span> <em id="cpf-opc" hidden>(opcional)</em></label>
@@ -1088,7 +1110,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     lsEdicao: null,   // item sendo alterado: { id, original, texto, erro, confirmar, salvando, idReq, idReqTexto, idReqApagar }
     lsRascunho: {}, lsReq: {}, lsErro: {}, lsSalvando: {},   // por dia (1…6): texto ainda não adicionado, { id, texto } do pedido, erro, salvando
     lsPend: {} };     // riscos tocados e ainda não confirmados pelo servidor: { id: true|false }
-  var picker = { tipo: null, letra: null, alvoItem: null, destino: 'loc', item: null, edIdx: null, equip: null };
+  var picker = { tipo: null, letra: null, alvoItem: null, destino: 'loc', item: null, edIdx: null, equip: null, busca: '' };
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
@@ -1230,7 +1252,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         podeMudarPreco: true,
         lojaCompleta: true,
         pedeNome: false,
-        versao: 10, hoje: diaAtras(0), diasEdicao: 30, alteracoes: alteracoes,
+        versao: 11, hoje: diaAtras(0), diasEdicao: 30, alteracoes: alteracoes,
         loja: { vendas: vendas, pagamentos: pagamentos, itens: lojaItens.map(function(x){ return { nome:x.nome, precoCentavos:x.preco }; }), resumo: resumoLojaDemo() },
         lista: lista, podeEscreverLista: true, quemEscreveLista: 'Cristiano'
       }));
@@ -1291,8 +1313,23 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
           if(modo==='novo' && soDigitos(a.telefone).length>=10) falhar('Já existe um cliente com esse nome. Toque nele na lista — ou, se for outra pessoa, acrescente um detalhe ao nome (cidade, empresa).');
           var tf = telD || soDigitos(a.telefone);
           if(tf.length<10 || tf.length>11) falhar('Informe o telefone com DDD.');
+          // versão 11: trocar o nome (as locações e vendas vão junto)
+          var pede = (modo==='editar' && p.novoNome!=null);
+          var novoN = pede ? limpa(p.novoNome).replace(/^[=+@\s]+/,'').slice(0,120) : '';
+          if(pede && !novoN) falhar('Informe o nome do cliente ou da empresa.');
+          var troca = (novoN && novoN!==a.nome) ? { de:a.nome, para:novoN } : null;
+          if(troca) pessoas.forEach(function(x,i){ if(i!==idx && norm(x.nome)===norm(novoN)) falhar('Já existe um cliente com o nome "'+x.nome+'". Se for a mesma pessoa, use esse cadastro; se não, acrescente um detalhe ao nome (cidade, empresa).'); });
           if(cpfD) a.cpf = fmtDoc(cpfD);
           a.telefone = fmtTel(tf);
+          if(troca){
+            var locsT = {}, vendasT = {};
+            movs.forEach(function(m){ if(norm(m.quemPegou)===norm(troca.de)){ m.quemPegou = troca.para; locsT[m.seq] = 1; } });
+            vendas.forEach(function(v){ if(norm(v.cliente)===norm(troca.de)){ v.cliente = troca.para; vendasT[v.seq] = 1; } });
+            a.nome = troca.para;
+            var rT = pacote();
+            rT.renomeado = { de:troca.de, para:troca.para, locacoes:Object.keys(locsT).length, vendas:Object.keys(vendasT).length };
+            return rT;
+          }
         }
         return pacote();
       },
@@ -1736,6 +1773,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
   }
   // ---- versão 9: o mesmo campo aceita CPF (11 números) ou CNPJ (14; os 12 primeiros podem ter letras, CNPJ novo) ----
   function v9(){ return state.versao>=9; }
+  // versão 11: o nome do cliente pode ser trocado no lápis (com servidor antigo, o nome continua fixo)
+  function v11(){ return state.versao>=11; }
   function normDoc(v){ return String(v==null?'':v).toUpperCase().replace(/[^0-9A-Z]/g,''); }
   // mesma conta do servidor: cada caractere vale o código menos 48 (A=17 … Z=42), pesos 2 a 9 da direita para a esquerda
   function cnpjValido(v){
@@ -1798,6 +1837,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
 
   // ================= PAINEL A–Z =================
   function mostrarView(qual){
+    if(qual!=='lista') soltarAlturaPainel();
     picker.view = qual;
     document.getElementById('p-view-lista').classList.toggle('on', qual==='lista');
     document.getElementById('p-view-form').classList.toggle('on', qual==='form');
@@ -1819,7 +1859,13 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       : (v9() ? 'Nome e telefone (o CPF ou CNPJ é opcional) — cadastra uma vez e fica salvo para sempre.'
               : 'Nome e telefone (o CPF é opcional) — cadastra uma vez e fica salvo para sempre.');
     var ehPessoa = (tipo==='pessoa');
+    picker.busca = '';
+    var bi = document.getElementById('picker-busca');
+    bi.value = '';
+    bi.placeholder = ehPessoa ? 'Buscar cliente (nome ou telefone)…' : (tipo==='loja' ? 'Buscar item da loja…' : 'Buscar equipamento…');
+    bi.setAttribute('aria-label', bi.placeholder.replace('…',''));
     document.getElementById('picker-novo').value = '';
+    document.getElementById('picker-novo').removeAttribute('data-da-busca');
     document.getElementById('p-novo-equip').style.display = (tipo==='equip') ? '' : 'none';
     document.getElementById('p-novo-cli').style.display = ehPessoa ? '' : 'none';
     document.getElementById('p-novo-loja').style.display = (tipo==='loja') ? '' : 'none';
@@ -1829,7 +1875,16 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     document.getElementById('picker').classList.add('on');
     document.body.style.overflow = 'hidden';
   }
+  // ao tocar na busca, o painel guarda a altura que tem: a lista encolhe dentro dele, sem o campo pular de lugar
+  // (no celular, com o teclado aberto, o campo poderia sumir atrás do teclado)
+  function travarAlturaPainel(){
+    var pn = document.querySelector('#picker .painel');
+    if(pn && !pn.style.height) pn.style.height = Math.round(pn.getBoundingClientRect().height)+'px';
+  }
+  function soltarAlturaPainel(){ var pn = document.querySelector('#picker .painel'); if(pn) pn.style.height = ''; }
+  document.addEventListener('focusin', function(ev){ if(ev.target && ev.target.id==='picker-busca') travarAlturaPainel(); });
   function fecharPicker(){
+    soltarAlturaPainel();
     document.getElementById('picker').classList.remove('on');
     document.body.style.overflow = '';
     picker.tipo = null; picker.alvoItem = null; picker.cli = null; picker.item = null; picker.edIdx = null; picker.equip = null;
@@ -1855,15 +1910,34 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(counts['#']) html += '<button type="button" data-letra="#" class="'+(picker.letra==='#'?'on':'')+'">#</button>';
     document.getElementById('picker-letras').innerHTML = html;
 
-    var itens = base.filter(function(p){ return picker.letra===null || inicial(p.nome)===picker.letra; });
+    // versão 11: busca com lupa — qualquer parte do nome, sem ligar para acento nem maiúsculas;
+    // várias palavras: precisa ter todas ("cabo 10" acha "Cabo XLR 10m"); cliente também pelo telefone
+    var palavras = palavrasBusca(picker.busca);
+    document.getElementById('picker-letras').hidden = palavras.length>0;
+    document.getElementById('picker-busca-x').hidden = !picker.busca;
+    var itens;
+    if(palavras.length){
+      var dig = soDigitos(picker.busca);
+      itens = base.filter(function(p){ return bateBusca(p, palavras, dig, ehPessoa); });
+      itens.sort(function(a, b){ return ordemBusca(a, palavras[0]) - ordemBusca(b, palavras[0]); });  // estável: o resto fica em ordem alfabética
+    } else {
+      itens = base.filter(function(p){ return picker.letra===null || inicial(p.nome)===picker.letra; });
+    }
     var listaEl = document.getElementById('picker-lista');
+    sugerirNovoEquip(palavras.length && !itens.length);
+    if(!itens.length && palavras.length){
+      listaEl.innerHTML = '<div class="p-vazio p-vazio-busca"><b>Nada encontrado com “'+esc(picker.busca.trim())+'”.</b><br>'
+        + (ehPessoa ? 'Confira o nome (ou o telefone) — ou toque em “Cadastrar novo cliente”.'
+           : (picker.tipo==='loja' ? 'Confira o nome — ou toque em “Cadastrar novo item”.' : 'Confira o nome — ou cadastre logo abaixo.'))+'</div>';
+      return;
+    }
     if(!itens.length){
       listaEl.innerHTML = base.length
         ? '<div class="p-vazio">Nenhum nome com a letra '+esc(picker.letra)+'.</div>'
         : '<div class="p-vazio">'+(ehPessoa ? 'Nenhum cliente cadastrado ainda. Toque em “Cadastrar novo cliente”.' : (picker.tipo==='loja' ? 'Ainda não há itens da loja. Toque em “Cadastrar novo item”.' : 'Ainda não há equipamentos registrados. Cadastre o primeiro abaixo.'))+'</div>';
       return;
     }
-    listaEl.innerHTML = itens.map(function(p){
+    listaEl.innerHTML = (palavras.length ? '<div class="p-achados" aria-live="polite">'+itens.length+(itens.length===1 ? ' encontrado' : ' encontrados')+'</div>' : '') + itens.map(function(p){
       var av = '<span class="pk-av">'+esc(p.nome.charAt(0).toUpperCase())+'</span>';
       if(picker.tipo==='loja'){
         var pr = Number(p.precoCentavos)||0;
@@ -1894,6 +1968,45 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
         + '</div>';
     }).join('');
   }
+  // ---- versão 11: busca do painel A–Z ----
+  function palavrasBusca(v){ var t = semAcento(v).replace(/\s+/g,' ').trim(); return t ? t.split(' ') : []; }
+  function bateBusca(p, palavras, dig, ehPessoa){
+    var nome = semAcento(p.nome);
+    if(palavras.every(function(w){ return nome.indexOf(w)>=0; })) return true;
+    return !!ehPessoa && dig.length>=3 && soDigitos(p.telefone).indexOf(dig)>=0;
+  }
+  // 0 = o nome começa com o que foi digitado · 1 = uma palavra do nome começa com ele · 2 = está no meio
+  function ordemBusca(p, w){
+    var nome = semAcento(p.nome);
+    if(nome.indexOf(w)===0) return 0;
+    return (' '+nome).indexOf(' '+w)>=0 ? 1 : 2;
+  }
+  function limparBusca(focar){
+    var bi = document.getElementById('picker-busca');
+    bi.value = ''; picker.busca = '';
+    renderPicker();
+    document.getElementById('picker-lista').scrollTop = 0;
+    if(focar){ try { bi.focus(); } catch(e){} }
+  }
+  // o que foi buscado e não existe (para já deixar escrito no cadastro novo); '' se achou alguma coisa
+  function buscaSemResultado(){
+    var palavras = palavrasBusca(picker.busca);
+    if(!palavras.length || !picker.tipo) return '';
+    var dig = soDigitos(picker.busca), ehPessoa = (picker.tipo==='pessoa');
+    return catalogo(picker.tipo).some(function(p){ return bateBusca(p, palavras, dig, ehPessoa); }) ? '' : picker.busca.trim();
+  }
+  // equipamento: buscou e não achou → o campo "Nome do equipamento" já vem com o que foi buscado
+  function sugerirNovoEquip(semResultado){
+    if(picker.tipo!=='equip') return;
+    var pn = document.getElementById('picker-novo'), daBusca = pn.getAttribute('data-da-busca')==='1';
+    if(semResultado && (daBusca || !pn.value.trim())){
+      pn.value = limparNomeCliente(picker.busca).replace(/^./, function(c){ return c.toUpperCase(); });
+      pn.setAttribute('data-da-busca','1');
+    } else if(!semResultado && daBusca){
+      pn.value = ''; pn.removeAttribute('data-da-busca');
+    }
+  }
+
   function preencherPessoa(nome, destino){
     var dest = destino || picker.destino || 'loc';
     if(dest==='edicao'){ if(state.edicao){ state.edicao.cliente = nome; state.edicao.erro = ''; renderEdicao(); } return; }
@@ -1954,6 +2067,46 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     else if(vazio && picker.cli && picker.cli.temCpf) hint.textContent = (picker.cli.tipoDoc||'CPF')+' atual: '+picker.cli.cpfMasc+' — deixe em branco para manter.';
     else hint.textContent = '';
   }
+  // ---- versão 11: trocar o nome do cliente ----
+  function chaveNome(v){ return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase(); }
+  function limparNomeCliente(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim().replace(/^[=+@\s]+/,'').slice(0,120); }
+  // "bruno almeida" → "Bruno Almeida" (de, da, do, das, dos e "e" ficam minúsculos); o resto fica como foi digitado
+  function nomeProprio(v){
+    var min = ['de','da','do','das','dos','e'];
+    return limparNomeCliente(v).split(' ').map(function(p, i){
+      return (i>0 && min.indexOf(p.toLowerCase())>=0) ? p : p.charAt(0).toUpperCase()+p.slice(1);
+    }).join(' ');
+  }
+  // aviso embaixo do nome enquanto a pessoa troca
+  function atualizarDicaNome(){
+    var hint = document.getElementById('nome-hint'), c = picker.cli, tx = '';
+    if(c && c.modo==='editar' && v11() && c.nome){
+      var novo = limparNomeCliente(document.getElementById('cli-nome').value);
+      if(novo && novo!==c.nome) tx = 'Antes: "'+c.nome+'". As locações e vendas desse cliente vão junto para o nome novo.';
+    }
+    hint.textContent = tx;
+    hint.classList.toggle('troca', !!tx);
+  }
+  // o que já estava preenchido neste aparelho com o nome antigo passa para o nome novo
+  function nomeTrocadoNaTela(de, para){
+    var k = chaveNome(de);
+    [['f-quem','f-quem-btn'],['vd-quem','vd-quem-btn']].forEach(function(par){
+      var inp = document.getElementById(par[0]);
+      if(inp.value && chaveNome(inp.value)===k){ inp.value = para; document.getElementById(par[1]).querySelector('.pf-tx').textContent = para; }
+    });
+    if(state.edicao){
+      if(chaveNome(state.edicao.cliente)===k) state.edicao.cliente = para;
+      if(state.edicao.antes && chaveNome(state.edicao.antes.cliente)===k) state.edicao.antes.cliente = para;
+    }
+    if(state.atalho && chaveNome(state.atalho.cliente)===k) state.atalho.cliente = para;
+  }
+  function textoNomeTrocado(t){
+    var l = Number(t.locacoes)||0, v = Number(t.vendas)||0, partes = [];
+    if(l) partes.push(l+(l===1 ? ' locação' : ' locações'));
+    if(v) partes.push(v+(v===1 ? ' venda' : ' vendas'));
+    return 'Nome trocado para "'+t.para+'"'+(partes.length ? ' — '+partes.join(' e ')+(l+v===1 ? ' foi junto' : ' foram junto') : '');
+  }
+
   function abrirFormCliente(modo, p){
     picker.cli = { modo:modo, nome: p ? p.nome : '', temCpf: !!(p && p.temCpf), tipoDoc: (p && p.tipoDoc) || 'CPF', cpfMasc: p ? p.cpfMasc : '', idReq: novoIdReq() };
     var nomeEl = document.getElementById('cli-nome'), cpfEl = document.getElementById('cli-cpf'), telEl = document.getElementById('cli-tel');
@@ -1982,8 +2135,13 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     cpfEl.maxLength = v9() ? 18 : 14;
     document.getElementById('picker-titulo').textContent = titulos[modo];
     document.getElementById('cli-sub').textContent = textos[modo];
+    // versão 11: no lápis, o nome também pode ser trocado (as locações e vendas vão junto para o nome novo)
+    var trocaNome = (modo==='editar' && v11());
+    if(trocaNome) document.getElementById('cli-sub').textContent = 'Corrija o nome, o telefone ou o '+(v9() ? 'CPF ou CNPJ' : 'CPF')+'. Se trocar o nome, as locações e vendas desse cliente vão junto para o nome novo.';
     nomeEl.value = p ? p.nome : '';
-    nomeEl.readOnly = (modo!=='novo');
+    // cadastro novo vindo de uma busca sem resultado: já deixa escrito o que foi buscado
+    if(modo==='novo' && !p){ var buscado = buscaSemResultado(); if(buscado) nomeEl.value = nomeProprio(buscado); }
+    nomeEl.readOnly = !(modo==='novo' || trocaNome);
     cpfEl.value = '';
     cpfEl.placeholder = (p && p.temCpf) ? 'Deixe em branco para manter' : (v9() ? 'Digite o CPF ou o CNPJ' : '000.000.000-00');
     var td = soDigitos(p ? p.telefone : '');
@@ -1993,6 +2151,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     document.getElementById('cli-erro').classList.remove('on');
     document.getElementById('cli-salvar-bt').textContent = (modo==='editar') ? 'Salvar alterações' : 'Salvar e usar';
     atualizarDicaCpf();
+    atualizarDicaNome();
     mostrarView('form');
     try{
       if(modo==='novo') nomeEl.focus();
@@ -2022,18 +2181,31 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
       var existe = acharCliente(nome);
       if(existe && (cpfObrigatorio() ? existe.temCpf : clienteCompleto(existe))) return falha('Já existe um cliente com esse nome. Toque nele na lista — ou, se for outra pessoa, acrescente um detalhe ao nome (cidade, empresa).');
     }
+    // versão 11: troca do nome (o servidor confere de novo e passa as locações e vendas para o nome novo)
+    var trocaNome = (c.modo==='editar' && v11() && !!c.nome && nome!==c.nome);
+    if(trocaNome){
+      var outro = acharCliente(nome);
+      if(outro && chaveNome(outro.nome)!==chaveNome(c.nome)) return falha('Já existe um cliente com o nome "'+outro.nome+'". Se for a mesma pessoa, use esse cadastro; se não, acrescente um detalhe ao nome (cidade, empresa).');
+    }
 
     var bt = document.getElementById('cli-salvar-bt'), rotulo = bt.textContent;
     if(bt.disabled) return;
+    var dados = { modo:c.modo, nome: (c.modo==='novo' ? nome : (c.nome || nome)), cpf:cpfD, telefone:telD };
+    if(trocaNome) dados.novoNome = nome;
+    // o código do pedido vai junto com o que foi preenchido: tocar de novo com o mesmo conteúdo (a internet caiu)
+    // nunca repete; conteúdo diferente é outro pedido (nunca é confundido com o anterior)
+    var chave = JSON.stringify([c.modo, dados.nome, dados.novoNome || '', cpfD, telD]);
+    if(!c.idReq || c.idReqChave!==chave){ c.idReq = novoIdReq(); c.idReqChave = chave; }
+    dados.idReq = c.idReq;
     bt.disabled = true; bt.textContent = 'Salvando…';
-    if(!c.idReq) c.idReq = novoIdReq();
     ocupado++;
     try{
-      var resp = await servidor('salvarCliente', { modo:c.modo, nome:nome, cpf:cpfD, telefone:telD, idReq:c.idReq });
+      var resp = await servidor('salvarCliente', dados);
       aplicarDados(resp);
+      if(resp && resp.renomeado) nomeTrocadoNaTela(resp.renomeado.de, resp.renomeado.para);
       render();
       if(c.modo==='editar'){
-        showToast('Cliente atualizado');
+        showToast(resp && resp.renomeado ? textoNomeTrocado(resp.renomeado) : 'Cliente atualizado');
         voltarLista();
       } else {
         showToast(c.modo==='novo' ? 'Cliente cadastrado' : 'Cadastro completo');
@@ -2464,6 +2636,7 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     if(acao==='picker-pessoa'){ abrirPicker('pessoa', null); return; }
     if(acao==='picker-equip'){ abrirPicker('equip', alvo.closest('.item-linha-form')); return; }
     if(acao==='picker-fechar'){ fecharPicker(); return; }
+    if(acao==='picker-busca-limpar'){ limparBusca(true); return; }
     if(acao==='picker-add'){ var v=document.getElementById('picker-novo').value.trim(); if(v) aplicarSelecao(v); return; }
     // cadastro de clientes
     if(acao==='cli-novo'){ abrirFormCliente('novo', null); return; }
@@ -2532,6 +2705,9 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     else if(t.id==='vd-valor'){ t.value = mascaraDinheiro(t.value); state.valorManual = true; atualizarResto(); }
     else if(t.id==='pag-valor'){ t.value = mascaraDinheiro(t.value); atualizarRestoPag(); }
     else if(t.id==='item-preco-in'){ t.value = mascaraDinheiro(t.value); }
+    else if(t.id==='picker-busca'){ picker.busca = t.value; picker.letra = null; renderPicker(); document.getElementById('picker-lista').scrollTop = 0; }
+    else if(t.id==='picker-novo'){ t.removeAttribute('data-da-busca'); }
+    else if(t.id==='cli-nome'){ atualizarDicaNome(); }
     else if(t.id==='ed-obs'){ if(state.edicao) state.edicao.obs = t.value; }
     else if(t.classList && t.classList.contains('op-in')){
       if(t.id==='op-ed-in' && state.edicao) state.edicao.operador = t.value;
@@ -2554,12 +2730,14 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     }
   });
   document.addEventListener('keydown', function(ev){
-    if(ev.key==='Escape'){ fecharPicker(); return; }
+    // Esc na busca com algo escrito: só limpa a busca (o painel continua aberto)
+    if(ev.key==='Escape'){ if(ev.target && ev.target.id==='picker-busca' && ev.target.value){ limparBusca(true); return; } fecharPicker(); return; }
     if(ev.key==='Enter' && ev.target && ev.target.tagName==='INPUT'){
       if(ev.target.closest && ev.target.closest('#p-view-form')){ ev.preventDefault(); salvarCliente(); }
       else if(ev.target.closest && ev.target.closest('#p-view-item')){ ev.preventDefault(); salvarItem(); }
       else if(ev.target.closest && ev.target.closest('#p-view-equip')){ ev.preventDefault(); salvarEquip('editar'); }
       else if(ev.target.id==='picker-novo'){ ev.preventDefault(); var v = ev.target.value.trim(); if(v) aplicarSelecao(v); }
+      else if(ev.target.id==='picker-busca'){ ev.preventDefault(); ev.target.blur(); }   // "Buscar" do teclado: fecha o teclado para ver a lista
     }
   });
   document.getElementById('add-item').addEventListener('click', function(){ document.getElementById('itens').appendChild(novaLinhaItem()); });
@@ -2872,6 +3050,8 @@ input[type=date].input{-webkit-appearance:none;appearance:none;min-height:46px}
     document.getElementById('item-sub').textContent = textos[modo];
     var nomeEl = document.getElementById('item-nome-in'), precoEl = document.getElementById('item-preco-in');
     nomeEl.value = it ? it.nome : '';
+    // item novo vindo de uma busca sem resultado: já deixa escrito o que foi buscado
+    if(novo && !it){ var buscado = buscaSemResultado(); if(buscado) nomeEl.value = limparNomeCliente(buscado).replace(/^./, function(ch){ return ch.toUpperCase(); }); }
     nomeEl.readOnly = !(novo || mudaNome);
     precoEl.value = (it && it.precoCentavos) ? formatarReais(it.precoCentavos) : '';
     document.getElementById('item-erro').classList.remove('on');
